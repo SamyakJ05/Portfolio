@@ -151,6 +151,54 @@
 
     .section-divider { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
     .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── Stats ─────────────────────────────────────────────────────── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 760px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 420px) { .stats-grid { grid-template-columns: 1fr; } }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 22px;
+    }
+    .stat-num {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 2rem; letter-spacing: -0.04em; color: var(--text);
+      line-height: 1; margin-bottom: 4px;
+    }
+    .stat-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .stat-sub { font-size: 0.72rem; color: var(--accent); margin-top: 4px; }
+
+    .pages-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+    .pages-table th {
+      font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-align: left; padding: 0 0 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .pages-table td { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; vertical-align: middle; }
+    .pages-table tr:last-child td { border-bottom: none; }
+    .bar-wrap { width: 120px; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.6s ease; }
+    .today-badge {
+      display: inline-block; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px;
+      background: rgba(79,152,163,0.15); color: var(--accent); border: 1px solid rgba(79,152,163,0.25);
+      margin-left: 6px;
+    }
+
+    /* ── Messages ───────────────────────────────────────────────────── */
+    .msg-row {
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 12px; padding: 16px 20px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; margin-bottom: 8px;
+    }
+    .msg-name { font-weight: 600; font-size: 0.88rem; margin-bottom: 2px; }
+    .msg-email { font-size: 0.75rem; color: var(--accent); margin-bottom: 6px; }
+    .msg-text { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .msg-date { font-size: 0.72rem; color: var(--muted); white-space: nowrap; padding-top: 2px; }
+    .stats-loading { font-size: 0.82rem; color: var(--muted); padding: 20px 0; }
   </style>
 </head>
 <body>
@@ -195,6 +243,35 @@
         <button class="btn btn-primary" id="new-btn">+ New Article</button>
       </div>
     </div>
+
+    <div class="section-divider">Overview</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">—</div>
+        <div class="stat-label">Total Views</div>
+        <div class="stat-sub" id="stat-total-today"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-home">—</div>
+        <div class="stat-label">Portfolio Visits</div>
+        <div class="stat-sub" id="stat-home-today"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-articles">—</div>
+        <div class="stat-label">Article Views</div>
+        <div class="stat-sub" id="stat-articles-today"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-msgs">—</div>
+        <div class="stat-label">Messages</div>
+      </div>
+    </div>
+
+    <div class="section-divider">Page Breakdown</div>
+    <div id="stats-pages"><div class="stats-loading">Loading stats…</div></div>
+
+    <div class="section-divider">Recent Messages</div>
+    <div id="stats-messages"><div class="stats-loading">Loading messages…</div></div>
 
     <div class="section-divider">All Articles</div>
     <div id="admin-list"></div>
@@ -284,33 +361,45 @@
   };
 
   // ── Auth ───────────────────────────────────────────────────────────
-  const PASS_HASH = 'samyak2026';
   const SESSION_KEY = 'sj_admin_auth';
 
   async function unlock(password) {
-    const pw = password || sessionStorage.getItem(SESSION_KEY + '_pw') || PASS_HASH;
     sessionStorage.setItem(SESSION_KEY, '1');
-    sessionStorage.setItem(SESSION_KEY + '_pw', pw);
-    ArticleStore.setAdminToken(pw);
-    await ArticleStore.init(pw);
+    sessionStorage.setItem(SESSION_KEY + '_pw', password);
+    ArticleStore.setAdminToken(password);
+    await ArticleStore.init(password);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('admin-screen').style.display = 'block';
     bindEditorEvents();
     renderList();
     resetEditor();
+    loadStats();
   }
 
-  if (sessionStorage.getItem(SESSION_KEY) === '1') { unlock(); }
+  const savedPw = sessionStorage.getItem(SESSION_KEY + '_pw');
+  if (sessionStorage.getItem(SESSION_KEY) === '1' && savedPw) { unlock(savedPw); }
 
   document.getElementById('login-btn').addEventListener('click', tryLogin);
   document.getElementById('login-pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
-  function tryLogin() {
-    const pw = document.getElementById('login-pw').value;
-    if (pw === PASS_HASH) { unlock(pw); }
-    else {
+  async function tryLogin() {
+    const pw = document.getElementById('login-pw').value.trim();
+    if (!pw) return;
+    const btn = document.getElementById('login-btn');
+    btn.textContent = 'Checking…'; btn.disabled = true;
+    try {
+      const res = await fetch('/api/stats', { headers: { Authorization: `Bearer ${pw}` } });
+      if (res.ok) {
+        await unlock(pw);
+      } else {
+        document.getElementById('login-err').style.display = 'block';
+        document.getElementById('login-pw').value = '';
+      }
+    } catch {
+      document.getElementById('login-err').textContent = 'Could not reach server. Check your connection.';
       document.getElementById('login-err').style.display = 'block';
-      document.getElementById('login-pw').value = '';
+    } finally {
+      btn.textContent = 'Unlock →'; btn.disabled = false;
     }
   }
 
@@ -537,6 +626,99 @@
     t.textContent = msg;
     t.className = 'toast show' + (success ? ' success' : '');
     setTimeout(() => { t.className = 'toast'; }, 2800);
+  }
+
+  // ── Stats ───────────────────────────────────────────────────────────
+  async function loadStats() {
+    const token = sessionStorage.getItem('sj_admin_auth_pw') || '';
+    let data;
+    try {
+      const res = await fetch('/api/stats', { headers: { Authorization: `Bearer ${token}` } });
+      if (!res.ok) throw new Error();
+      data = await res.json();
+    } catch {
+      document.getElementById('stats-pages').innerHTML = '<div class="stats-loading">Stats unavailable (requires deployed environment).</div>';
+      document.getElementById('stats-messages').innerHTML = '<div class="stats-loading">Messages unavailable (requires deployed environment).</div>';
+      return;
+    }
+
+    const { pages = {}, totalContacts = 0, recentContacts = [] } = data;
+    const today = new Date().toISOString().split('T')[0];
+
+    function pageTotal(key) { return pages[key]?.total ?? 0; }
+    function pageToday(key) { return pages[key]?.daily?.[today] ?? 0; }
+
+    // Aggregate totals
+    const homeViews = pageTotal('page:home');
+    const writingViews = pageTotal('page:writing');
+    const articleKeys = Object.keys(pages).filter(k => k.startsWith('page:article:'));
+    const articleTotal = articleKeys.reduce((s, k) => s + pageTotal(k), 0);
+    const grandTotal = homeViews + writingViews + articleTotal;
+
+    const todayTotal = pageToday('page:home') + pageToday('page:writing') + articleKeys.reduce((s, k) => s + pageToday(k), 0);
+    const todayArticles = articleKeys.reduce((s, k) => s + pageToday(k), 0);
+
+    document.getElementById('stat-total').textContent = grandTotal.toLocaleString();
+    document.getElementById('stat-home').textContent = homeViews.toLocaleString();
+    document.getElementById('stat-articles').textContent = articleTotal.toLocaleString();
+    document.getElementById('stat-msgs').textContent = totalContacts.toLocaleString();
+
+    if (todayTotal > 0) document.getElementById('stat-total-today').textContent = `+${todayTotal} today`;
+    if (pageToday('page:home') > 0) document.getElementById('stat-home-today').textContent = `+${pageToday('page:home')} today`;
+    if (todayArticles > 0) document.getElementById('stat-articles-today').textContent = `+${todayArticles} today`;
+
+    // Page breakdown table
+    const allRows = [
+      { label: 'Portfolio (Home)', key: 'page:home' },
+      { label: 'Writing / Blog', key: 'page:writing' },
+      ...articleKeys.map(k => {
+        const slug = k.replace('page:article:', '');
+        return { label: 'Article: ' + slug.replace(/-/g, ' '), key: k };
+      }),
+    ].filter(r => pageTotal(r.key) > 0);
+
+    const maxViews = Math.max(1, ...allRows.map(r => pageTotal(r.key)));
+    const pagesEl = document.getElementById('stats-pages');
+    if (!allRows.length) {
+      pagesEl.innerHTML = '<div class="stats-loading">No views recorded yet.</div>';
+    } else {
+      pagesEl.innerHTML = `
+        <table class="pages-table">
+          <thead><tr><th>Page</th><th>Total</th><th style="width:130px">Trend</th><th>Today</th></tr></thead>
+          <tbody>
+            ${allRows.map(r => {
+              const total = pageTotal(r.key);
+              const td = pageToday(r.key);
+              const pct = Math.round((total / maxViews) * 100);
+              return `<tr>
+                <td>${r.label}</td>
+                <td style="font-weight:600">${total.toLocaleString()}</td>
+                <td><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%"></div></div></td>
+                <td style="color:var(--muted)">${td > 0 ? `<span style="color:var(--accent)">+${td}</span>` : '—'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`;
+    }
+
+    // Messages
+    const msgsEl = document.getElementById('stats-messages');
+    if (!recentContacts.length) {
+      msgsEl.innerHTML = '<div class="stats-loading">No messages yet.</div>';
+    } else {
+      msgsEl.innerHTML = recentContacts.map(m => {
+        const date = new Date(m.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const preview = (m.message || '').slice(0, 120) + ((m.message || '').length > 120 ? '…' : '');
+        return `<div class="msg-row">
+          <div>
+            <div class="msg-name">${m.name}</div>
+            <div class="msg-email">${m.email}</div>
+            <div class="msg-text">${preview}</div>
+          </div>
+          <div class="msg-date">${date}</div>
+        </div>`;
+      }).join('');
+    }
   }
 })();
 </script>
