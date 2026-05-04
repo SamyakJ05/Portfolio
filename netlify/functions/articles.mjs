@@ -49,10 +49,10 @@ function isAuthed(req) {
 async function getAll(store) {
   const { blobs } = await store.list();
   if (blobs.length === 0) {
-    await store.setJSON(SEED.id, SEED);
+    await store.set(SEED.id, JSON.stringify(SEED));
     return [SEED];
   }
-  const items = await Promise.all(blobs.map(({ key }) => store.getJSON(key)));
+  const items = await Promise.all(blobs.map(({ key }) => store.get(key, { type: 'json' })));
   return items.filter(Boolean).sort((a, b) => new Date(b.date) - new Date(a.date));
 }
 
@@ -86,7 +86,7 @@ export default async (req) => {
     if (!article.slug) {
       article.slug = article.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     }
-    await store.setJSON(article.id, article);
+    await store.set(article.id, JSON.stringify(article));
     return new Response(JSON.stringify(article), { status: 200, headers: corsHeaders });
   }
 

@@ -25,7 +25,7 @@ export default async (req) => {
   ]);
 
   const pageEntries = await Promise.all(
-    statBlobs.map(async ({ key }) => ({ key, data: await statsStore.getJSON(key) }))
+    statBlobs.map(async ({ key }) => ({ key, data: await statsStore.get(key, { type: 'json' }) }))
   );
 
   const pages = {};
@@ -34,7 +34,7 @@ export default async (req) => {
   }
 
   // Return last 10 contact submissions sorted by date (newest first)
-  const allContacts = await Promise.all(contactBlobs.map(({ key }) => contactStore.getJSON(key)));
+  const allContacts = await Promise.all(contactBlobs.map(({ key }) => contactStore.get(key, { type: 'json' })));
   const sortedContacts = allContacts
     .filter(Boolean)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
