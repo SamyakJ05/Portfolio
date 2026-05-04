@@ -93,7 +93,7 @@ export default async (req) => {
   // Store to Blobs (non-critical — don't let it block email)
   try {
     const store = getStore("contact-submissions");
-    await store.setJSON(id, submission);
+    await store.set(id, JSON.stringify(submission));
   } catch (err) {
     console.error("[contact] Blobs store failed (non-fatal):", err);
   }

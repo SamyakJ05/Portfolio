@@ -24,7 +24,7 @@ export default async (req) => {
   const key = `page:${page.slice(0, 120)}`;
   const today = new Date().toISOString().split("T")[0];
 
-  const existing = (await store.getJSON(key)) ?? { total: 0, daily: {} };
+  const existing = (await store.get(key, { type: 'json' })) ?? { total: 0, daily: {} };
   existing.total += 1;
   existing.daily[today] = (existing.daily[today] ?? 0) + 1;
 
@@ -32,7 +32,7 @@ export default async (req) => {
   const sorted = Object.keys(existing.daily).sort();
   sorted.slice(0, Math.max(0, sorted.length - 30)).forEach((k) => delete existing.daily[k]);
 
-  await store.setJSON(key, existing);
+  await store.set(key, JSON.stringify(existing));
   return new Response(JSON.stringify({ ok: true }), { status: 200, headers: corsHeaders });
 };
 
