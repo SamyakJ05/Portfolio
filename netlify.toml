@@ -2,10 +2,32 @@
   publish = "."
   functions = "netlify/functions"
 
+# API routes → Netlify Functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+# blog.samyak.space → blog index
+[[redirects]]
+  from = "https://blog.samyak.space"
+  to = "/writing.html"
+  status = 200
+  force = true
+
+# blog.samyak.space/article?slug=... → article page
+[[redirects]]
+  from = "https://blog.samyak.space/article"
+  to = "/article.html"
+  status = 200
+  force = true
+
+# blog.samyak.space/* → root (serves styles, js, etc.)
+[[redirects]]
+  from = "https://blog.samyak.space/*"
+  to = "/:splat"
+  status = 200
+  force = true
 
 [[headers]]
   for = "/*"

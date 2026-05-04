@@ -209,6 +209,18 @@ document.querySelectorAll('[data-scroll]').forEach(btn => {
   });
 });
 
+/* ── Page tracking ────────────────────────────────────────────────── */
+window.trackPage = function(page) {
+  const key = 'sj_tracked_' + page;
+  if (sessionStorage.getItem(key)) return;
+  sessionStorage.setItem(key, '1');
+  fetch('/api/track', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ page }),
+  }).catch(() => {});
+};
+
 /* ── Contact form ─────────────────────────────────────────────────── */
 const contactForm = document.getElementById('contact-form');
 if (contactForm) {

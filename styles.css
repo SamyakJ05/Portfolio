@@ -478,7 +478,7 @@ section { padding: clamp(64px, 8vw, 120px) clamp(20px, 8vw, 120px); }
 @media (max-width: 900px) { .freelance-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .freelance-grid { grid-template-columns: 1fr; } }
 .freelance-card {
-  padding: 28px; border-radius: var(--radius);
+  padding: 24px; border-radius: var(--radius);
   background: var(--bg2); border: 1px solid var(--border);
   transition: transform 0.25s var(--ease-hover), box-shadow 0.25s, border-color 0.25s;
   opacity: 0; transform: translateY(24px);
@@ -486,20 +486,41 @@ section { padding: clamp(64px, 8vw, 120px) clamp(20px, 8vw, 120px); }
 .freelance-card.revealed { opacity: 1; transform: translateY(0); }
 .freelance-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(79,152,163,0.1);
-  border-color: rgba(79,152,163,0.3);
+  box-shadow: 0 16px 40px rgba(79,152,163,0.12);
+  border-color: rgba(79,152,163,0.4);
 }
 .freelance-icon {
-  width: 44px; height: 44px; border-radius: 10px;
+  width: 40px; height: 40px; border-radius: 10px;
   background: var(--accent-dim); border: 1px solid rgba(79,152,163,0.2);
   display: flex; align-items: center; justify-content: center;
-  color: var(--accent); margin-bottom: 16px;
+  color: var(--accent); margin-bottom: 14px;
+  transition: background 0.25s, border-color 0.25s;
+}
+.freelance-card:hover .freelance-icon {
+  background: rgba(79,152,163,0.18);
+  border-color: rgba(79,152,163,0.45);
 }
 .freelance-service {
   font-family: var(--font-display); font-weight: 700;
-  font-size: 1.05rem; letter-spacing: -0.02em; margin-bottom: 8px;
+  font-size: 1rem; letter-spacing: -0.02em; margin-bottom: 10px;
 }
-.freelance-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+.freelance-tags-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.freelance-tag {
+  font-size: 0.67rem; padding: 3px 8px; border-radius: 100px;
+  background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
+  transition: border-color 0.25s, color 0.25s;
+}
+.freelance-card:hover .freelance-tag { border-color: rgba(79,152,163,0.3); color: var(--text); }
+.freelance-reveal {
+  display: grid; grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.freelance-card:hover .freelance-reveal { grid-template-rows: 1fr; }
+.freelance-reveal > p {
+  overflow: hidden;
+  font-size: 0.82rem; color: var(--muted); line-height: 1.6;
+  padding-top: 12px; margin: 0;
+}
 .freelance-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 .freelance-note { font-size: 0.8rem; color: var(--muted); }
 

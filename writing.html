@@ -4,150 +4,291 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Writing — Samyak Jain</title>
+  <meta name="description" content="Technical writing on cloud engineering, AI development, and building things that work in production." />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* ── Writing page specific ────────────────────────────────────── */
-    .writing-page { max-width: 860px; margin: 0 auto; padding: calc(var(--nav-h) + 60px) clamp(20px,5vw,40px) 80px; }
+    body { cursor: auto; }
+    #cursor-dot, #cursor-ring { display: none; }
 
-    .wpage-header { margin-bottom: 64px; }
-    .wpage-title {
+    .blog-nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-h); display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(20px, 6vw, 80px);
+      background: transparent;
+      transition: background 0.3s, border-color 0.3s;
+      border-bottom: 1px solid transparent;
+    }
+    .blog-nav.scrolled {
+      background: rgba(13,13,13,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-color: var(--border);
+    }
+    .blog-nav-left { display: flex; align-items: center; gap: 20px; }
+    .blog-logo {
       font-family: var(--font-display); font-weight: 800;
-      font-size: clamp(2.5rem, 6vw, 5rem); letter-spacing: -0.04em; line-height: 1.1;
-      margin-bottom: 16px;
+      font-size: 1.1rem; letter-spacing: -0.03em; color: var(--text);
+      text-decoration: none; transition: color 0.2s;
     }
-    .wpage-sub { color: var(--muted); font-size: clamp(0.95rem,1.3vw,1.05rem); max-width: 480px; line-height: 1.7; }
+    .blog-logo:hover { color: var(--accent); }
+    .blog-logo span { color: var(--accent); }
+    .blog-nav-sep { color: var(--border); font-size: 0.9rem; }
+    .blog-nav-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em; }
+    .blog-nav-right { display: flex; align-items: center; gap: 14px; }
+    .blog-nav-portfolio {
+      font-size: 0.8rem; color: var(--muted);
+      text-decoration: none; transition: color 0.2s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .blog-nav-portfolio:hover { color: var(--text); }
 
-    /* Filter tags */
-    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 48px; }
+    /* ── Hero ───────────────────────────────────────────────────── */
+    .blog-hero {
+      padding: calc(var(--nav-h) + 80px) clamp(20px,6vw,120px) 64px;
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 32px; align-items: end;
+    }
+    @media (max-width: 640px) { .blog-hero { grid-template-columns: 1fr; } }
+
+    .blog-hero-text {}
+    .blog-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px; font-weight: 600;
+    }
+    .blog-title {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(3rem, 7vw, 5.5rem); letter-spacing: -0.04em; line-height: 1.0;
+      margin-bottom: 20px;
+    }
+    .blog-desc {
+      color: var(--muted); font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+      line-height: 1.75; max-width: 500px;
+    }
+    .blog-stats {
+      display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+      padding-bottom: 8px;
+    }
+    @media (max-width: 640px) { .blog-stats { align-items: flex-start; } }
+    .blog-stat-num {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 3rem; letter-spacing: -0.04em; color: var(--text); line-height: 1;
+    }
+    .blog-stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+
+    /* ── Divider ───────────────────────────────────────────────── */
+    .blog-divider {
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 clamp(20px,6vw,120px);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Filter bar ────────────────────────────────────────────── */
+    .blog-filter {
+      max-width: 1200px; margin: 0 auto;
+      padding: 32px clamp(20px,6vw,120px) 40px;
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+    .filter-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-right: 4px; }
     .filter-tag {
-      padding: 6px 16px; border-radius: 100px; font-size: 0.8rem;
-      border: 1px solid var(--border); background: var(--bg2); color: var(--muted);
-      cursor: none; transition: all 0.2s var(--ease-hover);
+      padding: 6px 16px; border-radius: 100px; font-size: 0.78rem;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer; transition: all 0.2s var(--ease-hover);
     }
-    .filter-tag:hover, .filter-tag.active {
-      border-color: var(--accent); color: var(--text); background: var(--accent-dim);
+    .filter-tag:hover { border-color: var(--accent); color: var(--text); }
+    .filter-tag.active { border-color: var(--accent); color: var(--text); background: var(--accent-dim); }
+
+    /* ── Article grid ──────────────────────────────────────────── */
+    .blog-grid {
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 clamp(20px,6vw,120px) 100px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
     }
+    @media (max-width: 780px) { .blog-grid { grid-template-columns: 1fr; } }
 
-    /* Article list */
-    #articles-list { display: flex; flex-direction: column; gap: 0; }
-
-    .article-row {
-      display: grid; grid-template-columns: 80px 1fr;
-      gap: 0 28px; padding: 28px 0;
-      border-bottom: 1px solid var(--border);
+    .blog-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px;
       text-decoration: none; color: var(--text);
-      opacity: 0; transform: translateY(16px);
-      transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out), background 0.2s;
-      border-radius: 8px;
+      display: flex; flex-direction: column; gap: 0;
+      transition: transform 0.25s var(--ease-hover), box-shadow 0.25s, border-color 0.25s;
+      opacity: 0; transform: translateY(20px);
     }
-    .article-row.in { opacity: 1; transform: translateY(0); }
-    .article-row:hover { background: var(--bg2); padding-left: 12px; padding-right: 12px; margin: 0 -12px; }
+    .blog-card.in { opacity: 1; transform: translateY(0); transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out), box-shadow 0.25s, border-color 0.25s; }
+    .blog-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 48px rgba(0,0,0,0.35);
+      border-color: rgba(var(--accent-rgb, 79,152,163),0.35);
+    }
+    .blog-card.featured { grid-column: 1 / -1; flex-direction: row; gap: 40px; align-items: center; }
+    @media (max-width: 780px) { .blog-card.featured { flex-direction: column; gap: 0; } }
 
-    .article-date-col {
-      padding-top: 4px;
+    .blog-card-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 16px; font-weight: 600;
+    }
+    .blog-card-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); display: block;
+    }
+
+    .blog-card-meta {
+      display: flex; align-items: center; gap: 10px;
       font-size: 0.72rem; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.08em;
-      line-height: 1.4;
+      margin-bottom: 14px;
     }
-    .article-month { display: block; }
-    .article-year { display: block; color: var(--border); }
+    .blog-card-meta-dot { opacity: 0.4; }
 
-    .article-body {}
-    .article-row-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-    .article-row-tag {
-      font-size: 0.68rem; padding: 2px 8px; border-radius: 100px;
-      background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
-    }
-    .article-row-title {
-      font-family: var(--font-display); font-weight: 700;
-      font-size: clamp(1.05rem, 1.8vw, 1.3rem); letter-spacing: -0.02em;
-      line-height: 1.3; margin-bottom: 8px;
+    .blog-card-title {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(1.15rem, 2vw, 1.45rem); letter-spacing: -0.025em;
+      line-height: 1.25; margin-bottom: 12px;
       transition: color 0.2s;
     }
-    .article-row:hover .article-row-title { color: var(--accent); }
-    .article-row-excerpt { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
-    .article-row-read {
-      display: inline-flex; align-items: center; gap: 4px;
-      margin-top: 12px; font-size: 0.78rem; color: var(--accent); font-weight: 500;
-    }
-    .article-row-read .arr { transition: transform 0.2s var(--ease-hover); }
-    .article-row:hover .arr { transform: translateX(4px); }
+    .blog-card:hover .blog-card-title { color: var(--accent); }
+    .blog-card.featured .blog-card-title { font-size: clamp(1.4rem, 2.5vw, 1.9rem); }
 
-    /* Empty state */
-    .empty-state { text-align: center; padding: 80px 20px; color: var(--muted); }
-    .empty-state h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 8px; color: var(--text); }
-
-    /* Back link */
-    .back-link {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 0.82rem; color: var(--muted);
-      margin-bottom: 40px; transition: color 0.2s;
+    .blog-card-excerpt {
+      font-size: 0.88rem; color: var(--muted); line-height: 1.7;
+      flex-grow: 1; margin-bottom: 20px;
     }
-    .back-link:hover { color: var(--accent); }
+    .blog-card.featured .blog-card-excerpt { font-size: 0.95rem; }
 
-    @media (max-width: 540px) {
-      .article-row { grid-template-columns: 1fr; }
-      .article-date-col { display: flex; gap: 6px; font-size: 0.7rem; }
+    .blog-card-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: auto; padding-top: 20px;
+      border-top: 1px solid var(--border);
     }
+    .blog-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .blog-card-tag {
+      font-size: 0.68rem; padding: 3px 9px; border-radius: 100px;
+      background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
+    }
+    .blog-card-read {
+      font-size: 0.78rem; color: var(--accent); font-weight: 500;
+      display: flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0;
+    }
+    .blog-card-read .arr { transition: transform 0.2s var(--ease-hover); }
+    .blog-card:hover .arr { transform: translateX(4px); }
+
+    .blog-card.featured .blog-card-body { flex: 1; }
+    .blog-card.featured .blog-card-visual {
+      width: 220px; flex-shrink: 0;
+      aspect-ratio: 4/3;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.4rem; color: var(--accent); letter-spacing: -0.03em;
+      opacity: 0.6;
+    }
+    @media (max-width: 780px) { .blog-card.featured .blog-card-visual { display: none; } }
+
+    /* ── Empty state ───────────────────────────────────────────── */
+    .blog-empty {
+      grid-column: 1 / -1; text-align: center; padding: 80px 20px; color: var(--muted);
+    }
+    .blog-empty h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 8px; color: var(--text); }
+
+    /* ── Blog footer ───────────────────────────────────────────── */
+    .blog-footer {
+      border-top: 1px solid var(--border);
+      padding: 28px clamp(20px,6vw,120px);
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; color: var(--muted);
+      max-width: 100%;
+    }
+    .blog-footer a { color: var(--muted); transition: color 0.2s; }
+    .blog-footer a:hover { color: var(--accent); }
   </style>
 </head>
 <body>
 
-<div id="cursor-dot"></div>
-<div id="cursor-ring"></div>
 <div id="dot-grid"></div>
 
-<nav id="navbar">
-  <a href="index.html" class="nav-logo">SJ</a>
-  <div class="nav-links">
-    <a class="nav-link" href="index.html">Home</a>
-    <a class="nav-link active" href="writing.html">Writing</a>
-    <div id="nav-indicator" style="left:0;width:0"></div>
+<nav class="blog-nav" id="blog-nav">
+  <div class="blog-nav-left">
+    <a class="blog-logo" id="home-link" href="index.html">SJ <span>·</span> Notes</a>
+  </div>
+  <div class="blog-nav-right">
+    <a class="blog-nav-portfolio" id="portfolio-link" href="index.html">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Portfolio
+    </a>
     <button id="theme-toggle" class="nav-toggle" aria-label="Toggle theme"></button>
   </div>
 </nav>
 
 <main>
-  <div class="writing-page">
-    <a class="back-link" href="index.html">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to Portfolio
-    </a>
-
-    <header class="wpage-header">
-      <div class="section-label">Writing</div>
-      <h1 class="wpage-title">Technical Articles</h1>
-      <p class="wpage-sub">Thoughts on cloud engineering, AI development, and building things that actually work in production.</p>
-    </header>
-
-    <div class="filter-bar" id="filter-bar">
-      <button class="filter-tag active" data-tag="all">All</button>
+  <div class="blog-hero">
+    <div class="blog-hero-text">
+      <div class="blog-eyebrow">Technical Writing</div>
+      <h1 class="blog-title">Writing</h1>
+      <p class="blog-desc">Thoughts on cloud engineering, AI development, and building things that actually work in production.</p>
     </div>
-
-    <div id="articles-list"></div>
+    <div class="blog-stats">
+      <span class="blog-stat-num" id="article-count">—</span>
+      <span class="blog-stat-label">Articles</span>
+    </div>
   </div>
+
+  <div class="blog-divider"></div>
+
+  <div class="blog-filter" id="filter-bar">
+    <span class="filter-label">Filter</span>
+    <button class="filter-tag active" data-tag="all">All</button>
+  </div>
+
+  <div class="blog-grid" id="articles-list"></div>
 </main>
 
-<footer style="max-width:860px;margin:0 auto;">
+<footer class="blog-footer">
   <span>Samyak Jain &copy; 2026</span>
-  <span><a href="index.html" style="color:var(--muted)">Portfolio</a></span>
+  <a id="footer-portfolio-link" href="index.html">samyak.space →</a>
 </footer>
 
 <script src="articles.js"></script>
 <script src="main.js"></script>
 <script>
 (async function() {
-  await ArticleStore.init();
+  const isBlog = location.hostname === 'blog.samyak.space';
+  if (isBlog) {
+    document.querySelector('.blog-logo').href = '/';
+    document.getElementById('portfolio-link').href = 'https://samyak.space';
+    document.getElementById('footer-portfolio-link').href = 'https://samyak.space';
+  }
 
-  // Collect all tags
+  setTimeout(() => document.getElementById('blog-nav').classList.add('visible'), 0);
+  window.addEventListener('scroll', () => {
+    document.getElementById('blog-nav').classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  const moonIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>`;
+  const sunIcon  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+  let isDark = true;
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.innerHTML = moonIcon;
+  themeBtn.addEventListener('click', () => {
+    isDark = !isDark;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    themeBtn.innerHTML = isDark ? moonIcon : sunIcon;
+  });
+
+  window.trackPage('writing');
+  await ArticleStore.init();
   const articles = ArticleStore.getAll();
-  const allTags = ['all', ...new Set(articles.flatMap(a => a.tags))];
+
+  document.getElementById('article-count').textContent = articles.length;
+
+  const allTags = [...new Set(articles.flatMap(a => a.tags))];
   const filterBar = document.getElementById('filter-bar');
   allTags.forEach(tag => {
-    if (tag === 'all') return; // already seeded
     const btn = document.createElement('button');
     btn.className = 'filter-tag';
     btn.dataset.tag = tag;
@@ -157,35 +298,54 @@
 
   let activeTag = 'all';
 
+  function readTime(art) {
+    return Math.max(1, Math.round(art.content.replace(/<[^>]+>/g,'').split(/\s+/).length / 200));
+  }
+
+  function articleUrl(art) {
+    return isBlog
+      ? `/article.html?slug=${encodeURIComponent(art.slug)}`
+      : `article.html?slug=${encodeURIComponent(art.slug)}`;
+  }
+
   function renderArticles() {
     const list = document.getElementById('articles-list');
     list.innerHTML = '';
     const filtered = activeTag === 'all' ? articles : articles.filter(a => a.tags.includes(activeTag));
     if (!filtered.length) {
-      list.innerHTML = '<div class="empty-state"><h3>Nothing here yet</h3><p>Check back soon — articles are on the way.</p></div>';
+      list.innerHTML = '<div class="blog-empty"><h3>Nothing here yet</h3><p>Check back soon — articles are on the way.</p></div>';
       return;
     }
+
     filtered.forEach((art, i) => {
+      const isFeatured = i === 0 && activeTag === 'all';
       const d = new Date(art.date);
-      const month = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      const year = d.getFullYear();
+      const dateStr = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const rt = readTime(art);
+
       const a = document.createElement('a');
-      a.className = 'article-row';
-      a.href = `article.html?slug=${encodeURIComponent(art.slug)}`;
-      a.innerHTML = `
-        <div class="article-date-col">
-          <span class="article-month">${month}</span>
-          <span class="article-year">${year}</span>
+      a.className = 'blog-card' + (isFeatured ? ' featured' : '');
+      a.href = articleUrl(art);
+
+      const body = `
+        <div class="blog-card-body">
+          ${isFeatured ? '<div class="blog-card-badge">Latest</div>' : ''}
+          <div class="blog-card-meta">
+            <span>${dateStr}</span>
+            <span class="blog-card-meta-dot">·</span>
+            <span>${rt} min read</span>
+          </div>
+          <div class="blog-card-title">${art.title}</div>
+          <div class="blog-card-excerpt">${art.excerpt}</div>
+          <div class="blog-card-footer">
+            <div class="blog-card-tags">${art.tags.map(t => `<span class="blog-card-tag">${t}</span>`).join('')}</div>
+            <span class="blog-card-read">Read <span class="arr">→</span></span>
+          </div>
         </div>
-        <div class="article-body">
-          <div class="article-row-tags">${art.tags.map(t => `<span class="article-row-tag">${t}</span>`).join('')}</div>
-          <div class="article-row-title">${art.title}</div>
-          <div class="article-row-excerpt">${art.excerpt}</div>
-          <span class="article-row-read">Read article <span class="arr">→</span></span>
-        </div>`;
+        ${isFeatured ? `<div class="blog-card-visual">${art.title.split(':')[0]}</div>` : ''}`;
+      a.innerHTML = body;
       list.appendChild(a);
-      // Staggered reveal
-      setTimeout(() => a.classList.add('in'), 80 + i * 80);
+      setTimeout(() => a.classList.add('in'), 60 + i * 70);
     });
   }
 
@@ -198,12 +358,6 @@
   });
 
   renderArticles();
-
-  // Navbar scroll
-  setTimeout(() => document.getElementById('navbar').classList.add('visible'), 0);
-  window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
-  });
 })();
 </script>
 </body>
