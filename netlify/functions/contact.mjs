@@ -90,14 +90,19 @@ export default async (req) => {
     read: false,
   };
 
-  const store = getStore("contact-submissions");
+  // Store to Blobs (non-critical — don't let it block email)
   try {
-    await Promise.all([
-      store.setJSON(id, submission),
-      sendEmail(submission),
-    ]);
+    const store = getStore("contact-submissions");
+    await store.setJSON(id, submission);
   } catch (err) {
-    console.error("[contact] Failed to store or send:", err);
+    console.error("[contact] Blobs store failed (non-fatal):", err);
+  }
+
+  // Send email (critical)
+  try {
+    await sendEmail(submission);
+  } catch (err) {
+    console.error("[contact] Email send failed:", err);
     return new Response(JSON.stringify({ error: "Failed to send message. Please email sj.samyakj@gmail.com directly." }), { status: 500, headers: corsHeaders });
   }
 
