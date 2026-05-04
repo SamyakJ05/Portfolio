@@ -388,7 +388,7 @@
     const btn = document.getElementById('login-btn');
     btn.textContent = 'Checking…'; btn.disabled = true;
     try {
-      const res = await fetch('/api/stats', { headers: { Authorization: `Bearer ${pw}` } });
+      const res = await fetch('/api/auth', { headers: { Authorization: `Bearer ${pw}` } });
       if (res.ok) {
         await unlock(pw);
       } else {
