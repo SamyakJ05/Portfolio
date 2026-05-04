@@ -8,16 +8,19 @@ const corsHeaders = {
 
 async function sendEmail({ name, email, message }) {
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) return;
+  if (!apiKey) {
+    console.error("[contact] RESEND_API_KEY is not set — email skipped");
+    return;
+  }
 
-  await fetch("https://api.resend.com/emails", {
+  const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "contact@samyak.space",
+      from: "onboarding@resend.dev",
       to: ["sj.samyakj@gmail.com"],
       reply_to: email,
       subject: `New message from ${name} — samyak.space`,
@@ -43,6 +46,12 @@ async function sendEmail({ name, email, message }) {
         </div>`,
     }),
   });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "(unreadable)");
+    console.error(`[contact] Resend error ${res.status}: ${body}`);
+    throw new Error(`Resend API returned ${res.status}`);
+  }
 }
 
 export default async (req) => {
@@ -81,12 +90,16 @@ export default async (req) => {
     read: false,
   };
 
-  // Store submission and send email in parallel
   const store = getStore("contact-submissions");
-  await Promise.all([
-    store.setJSON(id, submission),
-    sendEmail(submission),
-  ]);
+  try {
+    await Promise.all([
+      store.setJSON(id, submission),
+      sendEmail(submission),
+    ]);
+  } catch (err) {
+    console.error("[contact] Failed to store or send:", err);
+    return new Response(JSON.stringify({ error: "Failed to send message. Please email sj.samyakj@gmail.com directly." }), { status: 500, headers: corsHeaders });
+  }
 
   return new Response(JSON.stringify({ success: true, id }), { status: 200, headers: corsHeaders });
 };
