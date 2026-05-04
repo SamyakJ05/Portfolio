@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Writing — Samyak Jain</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ── Writing page specific ────────────────────────────────────── */
+    .writing-page { max-width: 860px; margin: 0 auto; padding: calc(var(--nav-h) + 60px) clamp(20px,5vw,40px) 80px; }
+
+    .wpage-header { margin-bottom: 64px; }
+    .wpage-title {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(2.5rem, 6vw, 5rem); letter-spacing: -0.04em; line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .wpage-sub { color: var(--muted); font-size: clamp(0.95rem,1.3vw,1.05rem); max-width: 480px; line-height: 1.7; }
+
+    /* Filter tags */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 48px; }
+    .filter-tag {
+      padding: 6px 16px; border-radius: 100px; font-size: 0.8rem;
+      border: 1px solid var(--border); background: var(--bg2); color: var(--muted);
+      cursor: none; transition: all 0.2s var(--ease-hover);
+    }
+    .filter-tag:hover, .filter-tag.active {
+      border-color: var(--accent); color: var(--text); background: var(--accent-dim);
+    }
+
+    /* Article list */
+    #articles-list { display: flex; flex-direction: column; gap: 0; }
+
+    .article-row {
+      display: grid; grid-template-columns: 80px 1fr;
+      gap: 0 28px; padding: 28px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none; color: var(--text);
+      opacity: 0; transform: translateY(16px);
+      transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out), background 0.2s;
+      border-radius: 8px;
+    }
+    .article-row.in { opacity: 1; transform: translateY(0); }
+    .article-row:hover { background: var(--bg2); padding-left: 12px; padding-right: 12px; margin: 0 -12px; }
+
+    .article-date-col {
+      padding-top: 4px;
+      font-size: 0.72rem; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      line-height: 1.4;
+    }
+    .article-month { display: block; }
+    .article-year { display: block; color: var(--border); }
+
+    .article-body {}
+    .article-row-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .article-row-tag {
+      font-size: 0.68rem; padding: 2px 8px; border-radius: 100px;
+      background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
+    }
+    .article-row-title {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.05rem, 1.8vw, 1.3rem); letter-spacing: -0.02em;
+      line-height: 1.3; margin-bottom: 8px;
+      transition: color 0.2s;
+    }
+    .article-row:hover .article-row-title { color: var(--accent); }
+    .article-row-excerpt { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+    .article-row-read {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 12px; font-size: 0.78rem; color: var(--accent); font-weight: 500;
+    }
+    .article-row-read .arr { transition: transform 0.2s var(--ease-hover); }
+    .article-row:hover .arr { transform: translateX(4px); }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 80px 20px; color: var(--muted); }
+    .empty-state h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 8px; color: var(--text); }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: var(--muted);
+      margin-bottom: 40px; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    @media (max-width: 540px) {
+      .article-row { grid-template-columns: 1fr; }
+      .article-date-col { display: flex; gap: 6px; font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="dot-grid"></div>
+
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">SJ</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link active" href="writing.html">Writing</a>
+    <div id="nav-indicator" style="left:0;width:0"></div>
+    <button id="theme-toggle" class="nav-toggle" aria-label="Toggle theme"></button>
+  </div>
+</nav>
+
+<main>
+  <div class="writing-page">
+    <a class="back-link" href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Portfolio
+    </a>
+
+    <header class="wpage-header">
+      <div class="section-label">Writing</div>
+      <h1 class="wpage-title">Technical Articles</h1>
+      <p class="wpage-sub">Thoughts on cloud engineering, AI development, and building things that actually work in production.</p>
+    </header>
+
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-tag active" data-tag="all">All</button>
+    </div>
+
+    <div id="articles-list"></div>
+  </div>
+</main>
+
+<footer style="max-width:860px;margin:0 auto;">
+  <span>Samyak Jain &copy; 2026</span>
+  <span><a href="index.html" style="color:var(--muted)">Portfolio</a></span>
+</footer>
+
+<script src="articles.js"></script>
+<script src="main.js"></script>
+<script>
+(async function() {
+  await ArticleStore.init();
+
+  // Collect all tags
+  const articles = ArticleStore.getAll();
+  const allTags = ['all', ...new Set(articles.flatMap(a => a.tags))];
+  const filterBar = document.getElementById('filter-bar');
+  allTags.forEach(tag => {
+    if (tag === 'all') return; // already seeded
+    const btn = document.createElement('button');
+    btn.className = 'filter-tag';
+    btn.dataset.tag = tag;
+    btn.textContent = tag;
+    filterBar.appendChild(btn);
+  });
+
+  let activeTag = 'all';
+
+  function renderArticles() {
+    const list = document.getElementById('articles-list');
+    list.innerHTML = '';
+    const filtered = activeTag === 'all' ? articles : articles.filter(a => a.tags.includes(activeTag));
+    if (!filtered.length) {
+      list.innerHTML = '<div class="empty-state"><h3>Nothing here yet</h3><p>Check back soon — articles are on the way.</p></div>';
+      return;
+    }
+    filtered.forEach((art, i) => {
+      const d = new Date(art.date);
+      const month = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const year = d.getFullYear();
+      const a = document.createElement('a');
+      a.className = 'article-row';
+      a.href = `article.html?slug=${encodeURIComponent(art.slug)}`;
+      a.innerHTML = `
+        <div class="article-date-col">
+          <span class="article-month">${month}</span>
+          <span class="article-year">${year}</span>
+        </div>
+        <div class="article-body">
+          <div class="article-row-tags">${art.tags.map(t => `<span class="article-row-tag">${t}</span>`).join('')}</div>
+          <div class="article-row-title">${art.title}</div>
+          <div class="article-row-excerpt">${art.excerpt}</div>
+          <span class="article-row-read">Read article <span class="arr">→</span></span>
+        </div>`;
+      list.appendChild(a);
+      // Staggered reveal
+      setTimeout(() => a.classList.add('in'), 80 + i * 80);
+    });
+  }
+
+  filterBar.addEventListener('click', e => {
+    const btn = e.target.closest('.filter-tag');
+    if (!btn) return;
+    activeTag = btn.dataset.tag;
+    filterBar.querySelectorAll('.filter-tag').forEach(b => b.classList.toggle('active', b === btn));
+    renderArticles();
+  });
+
+  renderArticles();
+
+  // Navbar scroll
+  setTimeout(() => document.getElementById('navbar').classList.add('visible'), 0);
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Samyak Jain — Software Engineer</title>
+  <meta name="description" content="Software Engineer at UBS. Cloud-native systems, AI tools, Amazon AIdeaS 2026 Innovation Category Winner." />
+
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <template id="__bundler_thumbnail">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80">
+      <rect width="120" height="80" fill="#0d0d0d"/>
+      <text x="60" y="48" text-anchor="middle" font-family="sans-serif" font-weight="800" font-size="28" fill="#4f98a3">SJ</text>
+    </svg>
+  </template>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- Dot grid -->
+<div id="dot-grid"></div>
+
+<!-- Background canvas -->
+<canvas id="bg-canvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.4s ease"></canvas>
+
+<!-- ── Navbar ──────────────────────────────────────────────────────── -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">SJ</a>
+  <div class="nav-links">
+    <a class="nav-link" data-section="hero" href="#hero">Home</a>
+    <a class="nav-link" data-section="about" href="#about">About</a>
+    <a class="nav-link" data-section="experience" href="#experience">Experience</a>
+    <a class="nav-link" data-section="accomplishments" href="#accomplishments">Awards</a>
+    <a class="nav-link" data-section="writing" href="#writing">Writing</a>
+    <a class="nav-link" data-section="freelance" href="#freelance">Hire Me</a>
+    <a class="nav-link" data-section="contact" href="#contact">Contact</a>
+    <div id="nav-indicator"></div>
+    <button id="theme-toggle" class="nav-toggle" aria-label="Toggle theme"></button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ── Hero ─────────────────────────────────────────────────────── -->
+  <section id="hero">
+    <h1 class="hero-name">Samyak Jain</h1>
+    <p class="hero-subtitle">
+      Software Engineer @ UBS &nbsp;·&nbsp; XLRI PGDM Finance
+    </p>
+    <p class="hero-tagline">
+      Building cloud-native systems by day.<br/>
+      <em>Shipping AI products at night.</em>
+    </p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary" data-scroll="experience">View My Work</button>
+      <button class="btn btn-outline" data-scroll="contact">Work With Me</button>
+    </div>
+  </section>
+
+  <!-- ── Featured AIdeaS ───────────────────────────────────────────── -->
+  <section id="featured">
+    <div class="aideas-card">
+      <div class="aideas-badge">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#FF9900" xmlns="http://www.w3.org/2000/svg"><path d="M6.763 10.036c0 .296.032.535.088.71.064.176.144.368.256.576.04.072.056.144.056.208 0 .088-.056.176-.176.264l-.584.392a.44.44 0 0 1-.24.08c-.096 0-.192-.048-.288-.136a2.96 2.96 0 0 1-.344-.448 7.408 7.408 0 0 1-.296-.568c-.744.88-1.68 1.32-2.808 1.32-.8 0-1.44-.232-1.904-.688-.464-.456-.704-1.064-.704-1.824 0-.808.288-1.464.864-1.96.576-.496 1.344-.744 2.32-.744.32 0 .656.024 1 .072.344.048.704.12 1.072.208v-.672c0-.704-.144-1.2-.432-1.48-.288-.288-.784-.424-1.496-.424-.32 0-.648.04-.984.12a7.26 7.26 0 0 0-.984.32 2.624 2.624 0 0 1-.32.12.556.556 0 0 1-.144.024c-.128 0-.192-.096-.192-.288v-.456c0-.144.016-.256.056-.32a.6.6 0 0 1 .224-.192 5.97 5.97 0 0 1 1.096-.392 5.277 5.277 0 0 1 1.36-.168c1.04 0 1.8.232 2.288.704.48.472.728 1.192.728 2.152v2.84zm-3.872 1.448c.312 0 .632-.056.968-.168.336-.112.632-.32.88-.608.144-.176.256-.376.312-.6.056-.224.088-.488.088-.8v-.384a7.716 7.716 0 0 0-.864-.16 7.13 7.13 0 0 0-.88-.056c-.624 0-1.08.128-1.392.384-.312.256-.464.616-.464 1.088 0 .44.112.776.344 1 .224.232.544.344.952.344l.056-.04zm7.496.976c-.16 0-.272-.024-.344-.08-.072-.048-.136-.16-.192-.312L7.86 5.988a1.44 1.44 0 0 1-.072-.32c0-.128.064-.2.192-.2h.784c.168 0 .28.024.344.08.072.048.128.16.184.312l1.392 5.488 1.296-5.488c.048-.16.104-.264.176-.312.072-.048.192-.08.352-.08h.64c.168 0 .28.024.352.08.072.048.136.16.176.312l1.312 5.56 1.44-5.56c.056-.16.12-.264.184-.312.072-.048.184-.08.344-.08h.744c.128 0 .2.064.2.2 0 .04-.008.08-.016.128a1.16 1.16 0 0 1-.056.2l-2.024 6.08c-.048.16-.112.264-.184.312-.072.048-.184.08-.344.08h-.688c-.168 0-.28-.024-.352-.08-.072-.056-.136-.16-.176-.32l-1.288-5.352-1.28 5.344c-.048.16-.104.264-.176.32-.072.056-.192.08-.352.08h-.688zm10.8.224a5.5 5.5 0 0 1-1.28-.152 3.8 3.8 0 0 1-.96-.368c-.128-.072-.216-.152-.248-.224a.56.56 0 0 1-.048-.224v-.472c0-.192.072-.288.208-.288.056 0 .112.008.168.024.056.016.136.056.224.096.304.136.632.24.984.312.36.072.712.112 1.072.112.568 0 1.008-.1 1.312-.296.304-.196.464-.48.464-.84 0-.248-.08-.456-.24-.624-.16-.168-.464-.32-.904-.464l-1.296-.4c-.656-.208-1.144-.512-1.448-.912-.304-.392-.456-.824-.456-1.288 0-.376.08-.704.24-1 .16-.296.376-.552.648-.76a2.92 2.92 0 0 1 .944-.472 3.88 3.88 0 0 1 1.136-.16c.2 0 .408.016.608.04.208.032.4.072.584.12.176.056.344.112.496.176.152.064.272.128.352.192a.72.72 0 0 1 .24.216.488.488 0 0 1 .072.272v.44c0 .192-.072.296-.208.296a.96.96 0 0 1-.352-.112 4.21 4.21 0 0 0-1.768-.36c-.52 0-.928.088-1.208.272-.28.184-.424.456-.424.824 0 .248.088.456.264.624.176.168.504.336.976.488l1.272.4c.648.208 1.12.496 1.408.872.288.376.432.8.432 1.272 0 .384-.08.728-.232 1.04-.16.312-.376.584-.656.808a2.88 2.88 0 0 1-1 .512 4.18 4.18 0 0 1-1.28.184z"/></svg>
+        Amazon AIdeaS 2026 — Innovation Category Winner
+      </div>
+      <div class="aideas-title">RetainIQ</div>
+      <div class="aideas-competition">Amazon's Global AI Innovation Competition</div>
+      <p class="aideas-desc">
+        Won the Innovation Category at Amazon's global AI competition. Built RetainIQ — an AI-powered cloud product — and published a detailed technical article on AWS Builder Center.
+      </p>
+      <div class="aideas-actions">
+        <a
+          class="btn btn-aws"
+          href="https://builder.aws.com/content/3CV2aFroWhni2e6MGlj8kLSDbCY/aideas-finalist-retainiq"
+          target="_blank" rel="noopener noreferrer"
+        >
+          Read the Article <span class="btn-arrow-span">→</span>
+        </a>
+        <a class="btn btn-outline" href="https://retainiq.cloud/" target="_blank" rel="noopener noreferrer">
+          Visit Site <span class="btn-arrow-span">→</span>
+        </a>
+      </div>
+      <div class="aideas-deco" aria-hidden="true">RetainIQ</div>
+    </div>
+  </section>
+
+  <!-- ── About ─────────────────────────────────────────────────────── -->
+  <section id="about">
+    <div class="section-label">About</div>
+    <p class="about-bio">
+      I'm a Software Engineer at UBS Pune building cloud-native data architecture and post-trade systems on Azure —
+      while simultaneously pursuing a PGDM in Finance from XLRI Jamshedpur.
+      Outside work, I'm deep in the AI builder ecosystem: automating workflows with n8n, prototyping with LangChain,
+      and shipping products fast with AI IDEs — because the best way to understand a tool is to build something real with it.
+    </p>
+
+    <div class="tools-label">Tools I Use &amp; Explore</div>
+    <div class="pills-grid">
+      <span class="pill">Java</span>
+      <span class="pill">Kotlin</span>
+      <span class="pill">Python</span>
+      <span class="pill">Spring Boot</span>
+      <span class="pill">Azure</span>
+      <span class="pill">Terraform</span>
+      <span class="pill">Docker</span>
+      <span class="pill">Kubernetes</span>
+      <span class="pill">Kafka</span>
+      <span class="pill">MongoDB</span>
+      <span class="pill">Databricks</span>
+      <span class="pill">LangChain</span>
+      <span class="pill">n8n</span>
+      <span class="pill">LLMs</span>
+      <span class="pill">GitLab CI/CD</span>
+      <span class="pill">Azure OpenAI</span>
+      <span class="pill">Cursor</span>
+      <span class="pill">Windsurf</span>
+      <span class="pill">Claude</span>
+      <span class="pill">React.js</span>
+    </div>
+  </section>
+
+  <!-- ── Experience ─────────────────────────────────────────────────── -->
+  <section id="experience">
+    <div class="section-label">Experience</div>
+    <div class="section-title">Where I've Worked</div>
+
+    <div class="timeline">
+      <div class="timeline-line"></div>
+
+      <!-- UBS Full-time -->
+      <div class="timeline-entry">
+        <div class="timeline-dot"></div>
+        <div class="entry-header">
+          <div class="entry-company">UBS</div>
+          <div class="entry-role">Software Engineer</div>
+        </div>
+        <div class="entry-meta">Aug 2024 – Present &nbsp;·&nbsp; Pune, India</div>
+        <ul class="entry-bullets">
+          <li>Building a cloud-native data mesh architecture on Azure; developing Java and Kotlin/Spring Boot microservices for scalable data and report generation for post-trade activities.</li>
+          <li>Automated deployments with GitLab CI/CD pipelines, reducing manual effort by 50%.</li>
+          <li>Developed Terraform and Ansible templates to provision 100+ Azure resources, reducing environment setup time by 80%.</li>
+          <li>Implemented IAM-based authentication per banking security standards; enhanced reliability with Splunk and BigPanda monitoring.</li>
+          <li>Currently building internal tools using spec-driven AI development, improving team efficiency by 50%+.</li>
+        </ul>
+      </div>
+
+      <!-- UBS Intern -->
+      <div class="timeline-entry">
+        <div class="timeline-dot"></div>
+        <div class="entry-header">
+          <div class="entry-company">UBS</div>
+          <div class="entry-role">Software Engineer Intern</div>
+        </div>
+        <div class="entry-meta">Jan 2024 – Aug 2024 &nbsp;·&nbsp; Pune, India</div>
+        <ul class="entry-bullets">
+          <li>Built microservices integrated with Azure OpenAI, Azure Search, and Databricks for intelligent document retrieval and summarization.</li>
+          <li>Optimized data storage via ADLS Gen2, achieving 50% reduction in storage costs.</li>
+          <li>Prototyped AI-powered data access solutions as groundwork for the enterprise cloud AI and data mesh strategy.</li>
+        </ul>
+      </div>
+
+      <!-- Ford Pro -->
+      <div class="timeline-entry">
+        <div class="timeline-dot"></div>
+        <div class="entry-header">
+          <div class="entry-company">Ford Pro</div>
+          <div class="entry-role">Software Engineer Intern</div>
+        </div>
+        <div class="entry-meta">Jun 2023 – Dec 2023 &nbsp;·&nbsp; Bengaluru, India</div>
+        <ul class="entry-bullets">
+          <li>Worked with Large Language Models to develop internal tools for streamlining bug resolution workflows.</li>
+          <li>Automated the bug reporting process; trained and deployed a conversational chatbot for internal application support.</li>
+        </ul>
+      </div>
+
+      <!-- ICAR -->
+      <div class="timeline-entry">
+        <div class="timeline-dot"></div>
+        <div class="entry-header">
+          <div class="entry-company">ICAR – NIAP</div>
+          <div class="entry-role">ML & Android Intern</div>
+        </div>
+        <div class="entry-meta">Jun 2022 – Aug 2022 &nbsp;·&nbsp; Delhi, India</div>
+        <ul class="entry-bullets">
+          <li>Trained a Machine Learning model using Keras and TensorFlow to detect wheat plant diseases.</li>
+          <li>Built a user-friendly Android app integrating the ML model for field use.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Accomplishments ─────────────────────────────────────────────── -->
+  <section id="accomplishments">
+    <div class="section-label">Recognition</div>
+    <div class="section-title">Awards &amp; Accomplishments</div>
+
+    <div class="acc-grid">
+      <div class="acc-card">
+        <span class="acc-icon">🚀</span>
+        <div class="acc-title">Amazon AIdeaS 2026 — Innovation Winner</div>
+        <div class="acc-issuer">Amazon Web Services</div>
+        <p class="acc-desc">Won the Innovation Category at Amazon's global AI competition with RetainIQ — an AI-powered cloud retention product.</p>
+      </div>
+      <div class="acc-card">
+        <span class="acc-icon">📄</span>
+        <div class="acc-title">Published Research</div>
+        <div class="acc-issuer">Procedia Computer Science, Elsevier 2024</div>
+        <p class="acc-desc">Co-authored "EfficientNet architecture and attention mechanism-based wheat disease identification model."</p>
+      </div>
+      <div class="acc-card">
+        <span class="acc-icon">🏆</span>
+        <div class="acc-title">FOSS HACK 2020 Prize Winner</div>
+        <div class="acc-issuer">FOSS United</div>
+        <p class="acc-desc">Won the national open-source hackathon organised by FOSS United Foundation.</p>
+      </div>
+      <div class="acc-card">
+        <span class="acc-icon">🏅</span>
+        <div class="acc-title">Gold Certified Engineer</div>
+        <div class="acc-issuer">UBS</div>
+        <p class="acc-desc">Awarded for engineering excellence — highest internal technical certification.</p>
+      </div>
+      <div class="acc-card">
+        <span class="acc-icon">🏆</span>
+        <div class="acc-title">Differentiator Award</div>
+        <div class="acc-issuer">UBS</div>
+        <p class="acc-desc">Recognized for outstanding contribution and exceptional impact on team deliverables.</p>
+      </div>
+      <div class="acc-card">
+        <span class="acc-icon">🥇</span>
+        <div class="acc-title">Solution Design &amp; Coding Labs Winner</div>
+        <div class="acc-issuer">UBS Internal Hackathons</div>
+        <p class="acc-desc">Won internal hackathons for Cloud Native Solutions and GenAI tracks.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Education ───────────────────────────────────────────────────── -->
+  <section id="education">
+    <div class="section-label">Education</div>
+    <div class="section-title">Academic Background</div>
+    <div class="edu-grid">
+      <div class="edu-card">
+        <div class="edu-school">XLRI Jamshedpur</div>
+        <div class="edu-degree">PGDM — Finance (XOL Online Program)</div>
+        <div class="edu-years">2025 – 2027</div>
+      </div>
+      <div class="edu-card">
+        <div class="edu-school">Shiv Nadar University</div>
+        <div class="edu-degree">B.Tech — Computer Science &amp; Engineering</div>
+        <div class="edu-years">2020 – 2024</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Writing ─────────────────────────────────────────────────────── -->
+  <section id="writing">
+    <div class="section-label">Writing</div>
+    <div class="section-title">Technical Articles</div>
+    <div class="writing-grid">
+      <a class="writing-card" href="article.html?slug=building-retainiq-amazon-aideas-winner" target="_blank" rel="noopener noreferrer">
+        <div class="writing-meta">AWS Builder Center &nbsp;·&nbsp; May 2026</div>
+        <div class="writing-title">Building RetainIQ: How I Won Amazon's AI Innovation Competition</div>
+        <p class="writing-excerpt">A deep dive into the architecture, design decisions, and AI-driven approach behind RetainIQ — the product that won the Innovation Category at Amazon AIdeaS 2026.</p>
+        <div class="writing-tags"><span>AWS</span><span>AI</span><span>Cloud</span></div>
+        <div class="writing-arrow">Read Article →</div>
+      </a>
+      <div class="writing-card writing-soon">
+        <div class="writing-soon-label">Coming Soon</div>
+        <div class="writing-title">Spec-Driven AI Development: How I 10x'd My Team's Velocity</div>
+        <p class="writing-excerpt">The exact workflow I use with AI IDEs, prompting strategies, and spec templates that cut delivery time in half at UBS.</p>
+        <div class="writing-tags"><span>AI Dev</span><span>Productivity</span><span>Engineering</span></div>
+      </div>
+      <div class="writing-card writing-soon">
+        <div class="writing-soon-label">Coming Soon</div>
+        <div class="writing-title">Cloud-Native Data Mesh on Azure: Lessons from the Trenches</div>
+        <p class="writing-excerpt">What actually works (and what doesn't) when building a real-world data mesh architecture across a large financial institution.</p>
+        <div class="writing-tags"><span>Azure</span><span>Data Mesh</span><span>Architecture</span></div>
+      </div>
+    </div>
+    <div style="margin-top:28px;">
+      <a class="btn btn-outline" href="writing.html">View All Articles <span class="btn-arrow-span">→</span></a>
+    </div>
+  </section>
+
+  <!-- ── Freelance ──────────────────────────────────────────────────────── -->
+  <section id="freelance">
+    <div class="section-label">Available for Hire</div>
+    <div class="section-title">Let's Build Something</div>
+    <p class="freelance-sub">I take on a small number of freelance projects alongside my full-time work. If you need sharp engineering on any of the below, let's talk.</p>
+    <div class="freelance-grid">
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div class="freelance-service">AI-Powered Products</div>
+        <p class="freelance-desc">End-to-end AI product builds — LLM pipelines, agents, RAG systems, and workflow automation using n8n, LangChain, and Azure OpenAI.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+        </div>
+        <div class="freelance-service">Cloud Architecture</div>
+        <p class="freelance-desc">Scalable cloud-native systems on Azure — microservices, data pipelines, infrastructure-as-code with Terraform, CI/CD setup.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <div class="freelance-service">Technical Writing</div>
+        <p class="freelance-desc">In-depth technical articles, documentation, and engineering blogs. I make complex systems accessible and compelling to read.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        </div>
+        <div class="freelance-service">Backend Engineering</div>
+        <p class="freelance-desc">Production-grade Java / Kotlin / Spring Boot services. API design, Kafka integrations, MongoDB, performance tuning.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+        </div>
+        <div class="freelance-service">Workflow Automation</div>
+        <p class="freelance-desc">Automate repetitive business processes using n8n, Zapier-style flows, and custom integrations. Connect your tools, eliminate manual work, ship faster.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="freelance-service">Tech Consulting</div>
+        <p class="freelance-desc">Architecture reviews, stack decisions, AI strategy for startups and teams. I help you cut through the noise and make the right technical calls early.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9l-3 3 3 3M15 9l3 3-3 3"/></svg>
+        </div>
+        <div class="freelance-service">Full-Stack Development</div>
+        <p class="freelance-desc">End-to-end web apps with React frontends and robust Node.js or Spring Boot backends. From MVP to production-ready with clean architecture.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+        </div>
+        <div class="freelance-service">Data Engineering</div>
+        <p class="freelance-desc">Data pipelines, ETL workflows, and analytics on Databricks and Azure. Turn raw data into reliable, queryable insights at scale.</p>
+      </div>
+      <div class="freelance-card">
+        <div class="freelance-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="freelance-service">DevOps &amp; Infrastructure</div>
+        <p class="freelance-desc">CI/CD pipelines, container orchestration, and IaC with Terraform. Reliable, automated deployments with zero-downtime from day one.</p>
+      </div>
+    </div>
+    <div class="freelance-cta">
+      <a class="btn btn-primary btn-magnetic" href="mailto:sj.samyakj@gmail.com?subject=Freelance%20Inquiry">Get in Touch →</a>
+      <p class="freelance-note">I typically respond within 24 hours. Let's scope your project.</p>
+    </div>
+  </section>
+
+  <!-- ── Contact ─────────────────────────────────────────────────────── -->
+  <section id="contact">
+    <div class="section-label">Contact</div>
+    <div class="section-title">Let's Talk</div>
+
+    <form class="contact-form reveal" id="contact-form" novalidate>
+      <div class="contact-form-row">
+        <div class="cf-field">
+          <label for="cf-name">Name</label>
+          <input type="text" id="cf-name" name="name" placeholder="Your name" autocomplete="name" />
+        </div>
+        <div class="cf-field">
+          <label for="cf-email">Email</label>
+          <input type="email" id="cf-email" name="email" placeholder="you@example.com" autocomplete="email" />
+        </div>
+      </div>
+      <div class="cf-field">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" placeholder="Tell me about your project…"></textarea>
+      </div>
+      <div id="contact-status"></div>
+      <button class="btn btn-primary" type="submit" id="cf-submit">Send Message →</button>
+    </form>
+
+    <a class="contact-email reveal" href="mailto:sj.samyakj@gmail.com">sj.samyakj@gmail.com</a>
+    <div class="contact-links reveal">
+      <a class="btn btn-outline btn-magnetic"
+         href="https://www.linkedin.com/in/samyakj05/" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4f98a3"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a class="btn btn-outline btn-magnetic"
+         href="https://x.com/_samyakk" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4f98a3"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.857L1.254 2.25H8.08l4.261 5.636 5.903-5.636zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        X
+      </a>
+      <a class="btn btn-outline btn-magnetic"
+         href="https://www.instagram.com/_samyakk" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f98a3" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        Instagram
+      </a>
+      <a class="btn btn-outline btn-magnetic"
+         href="https://github.com/SamyakJ05" target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4f98a3"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        GitHub
+      </a>
+      <a class="btn btn-aws btn-magnetic"
+         href="https://builder.aws.com/content/3CV2aFroWhni2e6MGlj8kLSDbCY/aideas-finalist-retainiq"
+         target="_blank" rel="noopener noreferrer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#000"><path d="M6.763 10.036c0 .296.032.535.088.71.064.176.144.368.256.576.04.072.056.144.056.208 0 .088-.056.176-.176.264l-.584.392a.44.44 0 0 1-.24.08c-.096 0-.192-.048-.288-.136a2.96 2.96 0 0 1-.344-.448 7.408 7.408 0 0 1-.296-.568c-.744.88-1.68 1.32-2.808 1.32-.8 0-1.44-.232-1.904-.688-.464-.456-.704-1.064-.704-1.824 0-.808.288-1.464.864-1.96.576-.496 1.344-.744 2.32-.744.32 0 .656.024 1 .072.344.048.704.12 1.072.208v-.672c0-.704-.144-1.2-.432-1.48-.288-.288-.784-.424-1.496-.424-.32 0-.648.04-.984.12a7.26 7.26 0 0 0-.984.32 2.624 2.624 0 0 1-.32.12.556.556 0 0 1-.144.024c-.128 0-.192-.096-.192-.288v-.456c0-.144.016-.256.056-.32a.6.6 0 0 1 .224-.192 5.97 5.97 0 0 1 1.096-.392A5.277 5.277 0 0 1 3.4 6.1c1.04 0 1.8.232 2.288.704.48.472.728 1.192.728 2.152v2.84zm-3.872 1.448c.312 0 .632-.056.968-.168.336-.112.632-.32.88-.608.144-.176.256-.376.312-.6.056-.224.088-.488.088-.8v-.384a7.716 7.716 0 0 0-.864-.16 7.13 7.13 0 0 0-.88-.056c-.624 0-1.08.128-1.392.384-.312.256-.464.616-.464 1.088 0 .44.112.776.344 1 .224.232.544.344.952.344l.056-.04z"/></svg>
+        AWS Article <span class="btn-arrow-span">→</span>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>Samyak Jain &copy; 2026</span>
+  <span>Software Engineer &nbsp;·&nbsp; Pune, India</span>
+</footer>
+
+<script src="main.js"></script>
+
+<!-- ── Tweaks Panel ──────────────────────────────────────────────── -->
+<div id="tweaks-panel" style="display:none;position:fixed;bottom:24px;right:24px;z-index:200;width:260px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;font-family:var(--font-body);box-shadow:0 20px 60px rgba(0,0,0,0.5);">
+  <div style="font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;font-weight:600;">Tweaks</div>
+
+  <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:6px;">Background Animation</label>
+  <div id="anim-options" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px;">
+    <button class="tweak-opt" data-anim="particles" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:0.75rem;cursor:none;transition:border-color 0.2s,background 0.2s;">Particles</button>
+    <button class="tweak-opt" data-anim="constellation" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:0.75rem;cursor:none;transition:border-color 0.2s,background 0.2s;">Constellation</button>
+    <button class="tweak-opt" data-anim="aurora" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:0.75rem;cursor:none;transition:border-color 0.2s,background 0.2s;">Aurora</button>
+    <button class="tweak-opt" data-anim="matrix" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:0.75rem;cursor:none;transition:border-color 0.2s,background 0.2s;">Matrix</button>
+    <button class="tweak-opt" data-anim="none" style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:0.75rem;cursor:none;grid-column:span 2;transition:border-color 0.2s,background 0.2s;">None (dot grid)</button>
+  </div>
+
+  <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:6px;">Accent Color</label>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+    <button class="color-swatch" data-color="#4f98a3" style="width:28px;height:28px;border-radius:50%;background:#4f98a3;border:2px solid transparent;cursor:none;" title="Teal"></button>
+    <button class="color-swatch" data-color="#3b82f6" style="width:28px;height:28px;border-radius:50%;background:#3b82f6;border:2px solid transparent;cursor:none;" title="Blue"></button>
+    <button class="color-swatch" data-color="#a78bfa" style="width:28px;height:28px;border-radius:50%;background:#a78bfa;border:2px solid transparent;cursor:none;" title="Violet"></button>
+    <button class="color-swatch" data-color="#f59e0b" style="width:28px;height:28px;border-radius:50%;background:#f59e0b;border:2px solid transparent;cursor:none;" title="Amber"></button>
+    <button class="color-swatch" data-color="#10b981" style="width:28px;height:28px;border-radius:50%;background:#10b981;border:2px solid transparent;cursor:none;" title="Emerald"></button>
+  </div>
+
+  <label style="font-size:0.78rem;color:var(--muted);display:block;margin-bottom:4px;">Intensity <span id="intensity-val" style="color:var(--text)">50</span></label>
+  <input id="intensity-slider" type="range" min="10" max="100" value="50" style="width:100%;accent-color:var(--accent);margin-bottom:4px;">
+</div>
+
+<script>
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "animStyle": "constellation",
+  "accentColor": "#a78bfa",
+  "intensity": 100
+}/*EDITMODE-END*/;
+
+// ── Tweaks protocol ──────────────────────────────────────────────────
+const panel = document.getElementById('tweaks-panel');
+window.addEventListener('message', e => {
+  if (e.data?.type === '__activate_edit_mode') panel.style.display = 'block';
+  if (e.data?.type === '__deactivate_edit_mode') panel.style.display = 'none';
+});
+window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+let tweaks = { ...TWEAK_DEFAULTS };
+
+function applyTweaks() {
+  document.documentElement.style.setProperty('--accent', tweaks.accentColor);
+  document.documentElement.style.setProperty('--accent-dim', tweaks.accentColor + '22');
+  setAnim(tweaks.animStyle);
+  document.getElementById('intensity-val').textContent = tweaks.intensity;
+  document.getElementById('intensity-slider').value = tweaks.intensity;
+  // highlight active anim btn
+  document.querySelectorAll('.tweak-opt').forEach(b => {
+    const active = b.dataset.anim === tweaks.animStyle;
+    b.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+    b.style.background = active ? 'var(--accent-dim)' : 'var(--bg3)';
+    b.style.color = active ? 'var(--text)' : 'var(--muted)';
+  });
+  // highlight active color
+  document.querySelectorAll('.color-swatch').forEach(b => {
+    b.style.borderColor = b.dataset.color === tweaks.accentColor ? 'var(--text)' : 'transparent';
+  });
+}
+
+document.querySelectorAll('.tweak-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    tweaks.animStyle = btn.dataset.anim;
+    applyTweaks();
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { animStyle: tweaks.animStyle } }, '*');
+  });
+});
+document.querySelectorAll('.color-swatch').forEach(btn => {
+  btn.addEventListener('click', () => {
+    tweaks.accentColor = btn.dataset.color;
+    applyTweaks();
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { accentColor: tweaks.accentColor } }, '*');
+  });
+});
+document.getElementById('intensity-slider').addEventListener('input', e => {
+  tweaks.intensity = +e.target.value;
+  applyTweaks();
+  window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { intensity: tweaks.intensity } }, '*');
+});
+
+// ── Background Animations ────────────────────────────────────────────
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let animFrame, currentAnim = null;
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+// --- Particles ---
+function runParticles() {
+  const count = Math.round(tweaks.intensity * 0.8);
+  const pts = Array.from({length: count}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    r: Math.random() * 2 + 1
+  }));
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const rgb = hexToRgb(tweaks.accentColor);
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${rgb},0.5)`;
+      ctx.fill();
+    });
+    animFrame = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// --- Constellation ---
+function runConstellation() {
+  const count = Math.round(tweaks.intensity * 0.6);
+  const pts = Array.from({length: count}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+  }));
+  const maxDist = 140;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const rgb = hexToRgb(tweaks.accentColor);
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width;
+      if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height;
+      if (p.y > canvas.height) p.y = 0;
+    });
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i+1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if (d < maxDist) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = `rgba(${rgb},${(1 - d/maxDist) * 0.25})`;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+        }
+      }
+    }
+    pts.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 1.5, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${rgb},0.6)`;
+      ctx.fill();
+    });
+    animFrame = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// --- Aurora ---
+function runAurora() {
+  let t = 0;
+  const speed = tweaks.intensity / 2000;
+  function draw() {
+    t += speed;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const rgb = hexToRgb(tweaks.accentColor);
+    const waves = 3;
+    for (let w = 0; w < waves; w++) {
+      const offset = (w / waves) * Math.PI * 2;
+      const grad = ctx.createLinearGradient(0, canvas.height*0.2, canvas.width, canvas.height*0.8);
+      const alpha = 0.04 + w*0.02;
+      grad.addColorStop(0, `rgba(${rgb},0)`);
+      grad.addColorStop(0.3 + 0.2*Math.sin(t+offset), `rgba(${rgb},${alpha})`);
+      grad.addColorStop(0.7 + 0.15*Math.cos(t*1.3+offset), `rgba(${rgb},${alpha*0.5})`);
+      grad.addColorStop(1, `rgba(${rgb},0)`);
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height*0.5);
+      for (let x = 0; x <= canvas.width; x += 4) {
+        const y = canvas.height*(0.35 + 0.15*Math.sin(x/canvas.width*Math.PI*2 + t + offset)
+          + 0.08*Math.cos(x/canvas.width*Math.PI*3 + t*1.5));
+        ctx.lineTo(x, y);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.lineTo(0, canvas.height);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+    }
+    animFrame = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// --- Matrix ---
+function runMatrix() {
+  const cols = Math.floor(canvas.width / 20);
+  const drops = Array(cols).fill(0).map(() => Math.random() * -50);
+  const chars = '01アイウエオカキクケコサシスセソ';
+  const speed = tweaks.intensity / 800;
+  function draw() {
+    const rgb = hexToRgb(tweaks.accentColor);
+    ctx.fillStyle = 'rgba(13,13,13,0.05)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.font = '13px monospace';
+    drops.forEach((y, i) => {
+      const ch = chars[Math.floor(Math.random()*chars.length)];
+      const bright = Math.random() > 0.95;
+      ctx.fillStyle = bright ? `rgba(255,255,255,0.9)` : `rgba(${rgb},0.45)`;
+      ctx.fillText(ch, i*20, y*20);
+      if (y * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i] += speed;
+    });
+    animFrame = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function setAnim(style) {
+  cancelAnimationFrame(animFrame);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  currentAnim = style;
+  if (style === 'none') {
+    canvas.style.opacity = '0';
+    document.getElementById('dot-grid').classList.add('visible');
+    return;
+  }
+  document.getElementById('dot-grid').classList.remove('visible');
+  canvas.style.opacity = '1';
+  if (style === 'particles') runParticles();
+  else if (style === 'constellation') runConstellation();
+  else if (style === 'aurora') runAurora();
+  else if (style === 'matrix') runMatrix();
+}
+
+// Apply defaults after page loads
+const animCycle = ['constellation', 'particles', 'aurora', 'matrix'];
+window.addEventListener('load', () => {
+  applyTweaks();
+  // Cycle through animations on each load
+  const lastIdx = parseInt(localStorage.getItem('sj_anim_idx') ?? '-1');
+  const nextIdx = (lastIdx + 1) % animCycle.length;
+  localStorage.setItem('sj_anim_idx', nextIdx);
+  const cycleAnim = animCycle[nextIdx];
+  tweaks.animStyle = cycleAnim;
+  document.querySelectorAll('.tweak-opt').forEach(b => {
+    const active = b.dataset.anim === cycleAnim;
+    b.style.borderColor = active ? 'var(--accent)' : 'var(--border)';
+    b.style.background = active ? 'var(--accent-dim)' : 'var(--bg3)';
+    b.style.color = active ? 'var(--text)' : 'var(--muted)';
+  });
+  setTimeout(() => setAnim(cycleAnim), 1200);
+});
+</script>
+</body>
+</html>

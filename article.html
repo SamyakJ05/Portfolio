@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Article — Samyak Jain</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .article-page {
+      max-width: 700px; margin: 0 auto;
+      padding: calc(var(--nav-h) + 60px) clamp(20px,5vw,40px) 100px;
+    }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.82rem; color: var(--muted);
+      margin-bottom: 48px; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* Progress bar */
+    #read-progress {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: var(--accent); z-index: 200;
+      width: 0%; transition: width 0.1s linear;
+    }
+
+    .art-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .art-tag {
+      font-size: 0.7rem; padding: 3px 10px; border-radius: 100px;
+      background: var(--bg2); border: 1px solid var(--border); color: var(--accent);
+      letter-spacing: 0.06em; font-weight: 500;
+    }
+
+    .art-title {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(1.8rem, 4vw, 3rem); letter-spacing: -0.04em;
+      line-height: 1.15; margin-bottom: 16px;
+    }
+
+    .art-meta {
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      font-size: 0.8rem; color: var(--muted); margin-bottom: 48px;
+      padding-bottom: 32px; border-bottom: 1px solid var(--border);
+    }
+    .art-meta-author { color: var(--text); font-weight: 500; }
+    .art-meta-dot { opacity: 0.3; }
+
+    /* Article body prose */
+    .art-body {
+      font-size: clamp(1rem, 1.4vw, 1.08rem);
+      line-height: 1.85; color: var(--text);
+    }
+    .art-body h2 {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: clamp(1.3rem, 2.5vw, 1.7rem); letter-spacing: -0.03em;
+      margin: 52px 0 16px; color: var(--text);
+    }
+    .art-body h3 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: 1.1rem; letter-spacing: -0.02em;
+      margin: 36px 0 12px;
+    }
+    .art-body p { margin-bottom: 24px; }
+    .art-body ul, .art-body ol { padding-left: 24px; margin-bottom: 24px; }
+    .art-body li { margin-bottom: 8px; line-height: 1.7; }
+    .art-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+    .art-body strong { color: var(--text); font-weight: 600; }
+    .art-body blockquote {
+      border-left: 2px solid var(--accent); padding: 4px 0 4px 20px;
+      margin: 32px 0; color: var(--muted); font-style: italic;
+    }
+    .art-body code {
+      font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85em;
+      background: var(--bg2); border: 1px solid var(--border);
+      padding: 2px 6px; border-radius: 4px; color: var(--accent);
+    }
+    .art-body pre {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px 24px; overflow-x: auto;
+      margin-bottom: 28px;
+    }
+    .art-body pre code { background: none; border: none; padding: 0; font-size: 0.88rem; color: var(--text); }
+
+    /* Footer CTA */
+    .art-footer {
+      margin-top: 80px; padding-top: 40px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .art-footer-label { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .art-footer-cta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .art-author-bio {
+      display: flex; gap: 16px; align-items: flex-start;
+      padding: 24px; background: var(--bg2); border-radius: 12px;
+      border: 1px solid var(--border); margin-top: 16px;
+    }
+    .art-author-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--accent-dim); border: 1px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-weight: 800; font-size: 1rem;
+      color: var(--accent); flex-shrink: 0;
+    }
+    .art-author-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+    .art-author-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+    .not-found { text-align: center; padding: 120px 20px; }
+    .not-found h2 { font-family: var(--font-display); font-size: 2rem; margin-bottom: 12px; }
+    .not-found p { color: var(--muted); margin-bottom: 28px; }
+  </style>
+</head>
+<body>
+
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+<div id="read-progress"></div>
+
+<nav id="navbar">
+  <a href="index.html" class="nav-logo">SJ</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link active" href="writing.html">Writing</a>
+    <div id="nav-indicator" style="left:0;width:0"></div>
+    <button id="theme-toggle" class="nav-toggle" aria-label="Toggle theme"></button>
+  </div>
+</nav>
+
+<main>
+  <div class="article-page" id="article-page">
+    <!-- Populated by JS -->
+  </div>
+</main>
+
+<script src="articles.js"></script>
+<script src="main.js"></script>
+<script>
+(async function() {
+  setTimeout(() => document.getElementById('navbar').classList.add('visible'), 0);
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+    // reading progress
+    const el = document.documentElement;
+    const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+    document.getElementById('read-progress').style.width = pct + '%';
+  });
+
+  const params = new URLSearchParams(location.search);
+  const slug = params.get('slug');
+  const page = document.getElementById('article-page');
+
+  if (!slug) { renderNotFound(); return; }
+
+  await ArticleStore.init();
+  const art = ArticleStore.getBySlug(slug);
+  if (!art || !art.published) { renderNotFound(); return; }
+
+  document.title = art.title + ' — Samyak Jain';
+
+  const readTime = Math.max(1, Math.round(art.content.replace(/<[^>]+>/g,'').split(/\s+/).length / 200));
+
+  page.innerHTML = `
+    <a class="back-link" href="writing.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      All Articles
+    </a>
+    <div class="art-tags">${art.tags.map(t=>`<span class="art-tag">${t}</span>`).join('')}</div>
+    <h1 class="art-title">${art.title}</h1>
+    <div class="art-meta">
+      <span class="art-meta-author">Samyak Jain</span>
+      <span class="art-meta-dot">·</span>
+      <span>${ArticleStore.formatDate(art.date)}</span>
+      <span class="art-meta-dot">·</span>
+      <span>${readTime} min read</span>
+    </div>
+    <div class="art-body">${art.content}</div>
+    <div class="art-footer">
+      <div class="art-author-bio">
+        <div class="art-author-avatar">SJ</div>
+        <div>
+          <div class="art-author-name">Samyak Jain</div>
+          <div class="art-author-desc">Software Engineer at UBS. Building cloud-native systems and AI products. Amazon AIdeaS 2026 Innovation Category Winner. Pursuing PGDM Finance at XLRI.</div>
+        </div>
+      </div>
+      <div class="art-footer-cta">
+        <a class="btn btn-outline" href="writing.html">← More Articles</a>
+        <a class="btn btn-primary" href="index.html#contact">Get in Touch</a>
+      </div>
+    </div>`;
+
+  function renderNotFound() {
+    page.innerHTML = `
+      <div class="not-found">
+        <h2>Article not found</h2>
+        <p>This article doesn't exist or hasn't been published yet.</p>
+        <a class="btn btn-primary" href="writing.html">Browse Articles</a>
+      </div>`;
+  }
+})();
+</script>
+</body>
+</html>
