@@ -14,28 +14,28 @@ const SEED_ARTICLES = [
     date: "2026-05-01",
     tags: ["AWS", "AI", "Cloud", "Product"],
     excerpt:
-      "A deep dive into the architecture, design decisions, and AI-driven approach behind RetainIQ — the product that won the Innovation Category at Amazon AIdeaS 2026.",
-    content: `<p>Earlier this year, I entered Amazon's global AI Innovation competition — <strong>AIdeaS 2026</strong> — with a product called <strong>RetainIQ</strong>. We won the Innovation Category.</p>
+      "A deep dive into the architecture, design decisions, and AI-driven approach behind RetainIQ - the product that won the Innovation Category at Amazon AIdeaS 2026.",
+    content: `<p>Earlier this year, I entered Amazon's global AI Innovation competition - <strong>AIdeaS 2026</strong> - with a product called <strong>RetainIQ</strong>. We won the Innovation Category.</p>
 
 <p>This is the full story: what we built, how we built it, and what I learned.</p>
 
 <h2>The Problem</h2>
-<p>Customer churn is expensive. Most businesses react to it — they notice a customer has left and then scramble. RetainIQ flips that model: it predicts churn before it happens and triggers personalised, AI-generated retention actions automatically.</p>
+<p>Customer churn is expensive. Most businesses react to it - they notice a customer has left and then scramble. RetainIQ flips that model: it predicts churn before it happens and triggers personalised, AI-generated retention actions automatically.</p>
 
 <h2>The Architecture</h2>
 <p>RetainIQ is built cloud-native on AWS. The core stack:</p>
 <ul>
-  <li><strong>Amazon Bedrock</strong> — LLM backbone for generating personalised retention messages</li>
-  <li><strong>Lambda + SQS</strong> — event-driven pipeline for churn signal processing</li>
-  <li><strong>DynamoDB</strong> — storing customer state and action history</li>
-  <li><strong>EventBridge</strong> — orchestrating scheduled re-engagement workflows</li>
+  <li><strong>Amazon Bedrock</strong> - LLM backbone for generating personalised retention messages</li>
+  <li><strong>Lambda + SQS</strong> - event-driven pipeline for churn signal processing</li>
+  <li><strong>DynamoDB</strong> - storing customer state and action history</li>
+  <li><strong>EventBridge</strong> - orchestrating scheduled re-engagement workflows</li>
 </ul>
 
 <h2>The AI Layer</h2>
-<p>The intelligence sits in two places. First, a lightweight ML model scoring churn probability from behavioural signals. Second, a prompt pipeline that takes the churn score + customer context and generates a hyper-personalised message — tone, offer, channel all adapted per user.</p>
+<p>The intelligence sits in two places. First, a lightweight ML model scoring churn probability from behavioural signals. Second, a prompt pipeline that takes the churn score + customer context and generates a hyper-personalised message - tone, offer, channel all adapted per user.</p>
 
 <h2>What Won It</h2>
-<p>The judges cited the tight product-architecture fit and the clarity of the business case. But honestly? The thing that stood out was the demo. Seeing the system catch a churning customer in real-time and respond within seconds — that landed.</p>
+<p>The judges cited the tight product-architecture fit and the clarity of the business case. But honestly? The thing that stood out was the demo. Seeing the system catch a churning customer in real-time and respond within seconds - that landed.</p>
 
 <p>Full technical write-up is published on <a href="https://builder.aws.com/content/3CV2aFroWhni2e6MGlj8kLSDbCY/aideas-finalist-retainiq" target="_blank" rel="noopener">AWS Builder Center</a>.</p>`,
     published: true,

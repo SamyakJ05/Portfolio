@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Article — Samyak Jain</title>
+  <title>Article - Samyak Jain</title>
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
@@ -294,7 +294,7 @@
   if (art?.published) window.trackPage(`article:${slug}`);
   if (!art || !art.published) { renderNotFound(); return; }
 
-  document.title = art.title + ' — Samyak Jain';
+  document.title = art.title + ' - Samyak Jain';
   navTitle.textContent = art.title;
 
   const readTime = Math.max(1, Math.round(art.content.replace(/<[^>]+>/g,'').split(/\s+/).length / 200));

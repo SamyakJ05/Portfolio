@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Samyak Jain</title>
+  <title>Admin - Samyak Jain</title>
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
@@ -247,22 +247,22 @@
     <div class="section-divider">Overview</div>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-num" id="stat-total">—</div>
+        <div class="stat-num" id="stat-total">-</div>
         <div class="stat-label">Total Views</div>
         <div class="stat-sub" id="stat-total-today"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" id="stat-home">—</div>
+        <div class="stat-num" id="stat-home">-</div>
         <div class="stat-label">Portfolio Visits</div>
         <div class="stat-sub" id="stat-home-today"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" id="stat-articles">—</div>
+        <div class="stat-num" id="stat-articles">-</div>
         <div class="stat-label">Article Views</div>
         <div class="stat-sub" id="stat-articles-today"></div>
       </div>
       <div class="stat-card">
-        <div class="stat-num" id="stat-msgs">—</div>
+        <div class="stat-num" id="stat-msgs">-</div>
         <div class="stat-label">Messages</div>
       </div>
     </div>
@@ -356,7 +356,7 @@
   };
   const formatPlaceholders = {
     markdown:   '## Section Heading\n\nStart writing in Markdown...\n\n- bullet point\n- another point\n\n> A blockquote\n\n**bold** and *italic* and `inline code`',
-    paragraphs: 'Just write your article here.\n\nEach blank line creates a new paragraph.\n\nNo special formatting needed — just write naturally.',
+    paragraphs: 'Just write your article here.\n\nEach blank line creates a new paragraph.\n\nNo special formatting needed - just write naturally.',
     html:       '<p>Start writing...</p>\n\n<h2>Section heading</h2>\n<p>Your content here.</p>'
   };
 
@@ -694,7 +694,7 @@
                 <td>${r.label}</td>
                 <td style="font-weight:600">${total.toLocaleString()}</td>
                 <td><div class="bar-wrap"><div class="bar-fill" style="width:${pct}%"></div></div></td>
-                <td style="color:var(--muted)">${td > 0 ? `<span style="color:var(--accent)">+${td}</span>` : '—'}</td>
+                <td style="color:var(--muted)">${td > 0 ? `<span style="color:var(--accent)">+${td}</span>` : '-'}</td>
               </tr>`;
             }).join('')}
           </tbody>

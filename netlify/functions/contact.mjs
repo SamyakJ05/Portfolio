@@ -9,7 +9,7 @@ const corsHeaders = {
 async function sendEmail({ name, email, message }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
-    console.error("[contact] RESEND_API_KEY is not set — email skipped");
+    console.error("[contact] RESEND_API_KEY is not set - email skipped");
     return;
   }
 
@@ -23,7 +23,7 @@ async function sendEmail({ name, email, message }) {
       from: "onboarding@resend.dev",
       to: ["sj.samyakj@gmail.com"],
       reply_to: email,
-      subject: `New message from ${name} — samyak.space`,
+      subject: `New message from ${name} - samyak.space`,
       html: `
         <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;color:#111">
           <div style="background:#0d0d0d;padding:24px 32px;border-radius:12px 12px 0 0">
@@ -90,7 +90,7 @@ export default async (req) => {
     read: false,
   };
 
-  // Store to Blobs (non-critical — don't let it block email)
+  // Store to Blobs (non-critical - don't let it block email)
   try {
     const store = getStore("contact-submissions");
     await store.set(id, JSON.stringify(submission));
