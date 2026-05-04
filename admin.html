@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Samyak Jain</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { cursor: auto; }
+    #cursor-dot, #cursor-ring { display: none; }
+
+    /* ── Login screen ──────────────────────────────────────────────── */
+    #login-screen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .login-box {
+      width: 100%; max-width: 380px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px;
+    }
+    .login-logo {
+      font-family: var(--font-display); font-weight: 800; font-size: 1.6rem;
+      letter-spacing: -0.03em; margin-bottom: 8px;
+    }
+    .login-sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
+    .login-err {
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);
+      color: #f87171; border-radius: 8px; padding: 10px 14px;
+      font-size: 0.82rem; margin-bottom: 16px; display: none;
+    }
+
+    /* ── Form controls ─────────────────────────────────────────────── */
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 0.75rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .field input, .field textarea, .field select {
+      width: 100%; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; color: var(--text);
+      font-family: var(--font-body); font-size: 0.9rem;
+      outline: none; transition: border-color 0.2s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--accent); }
+    .field textarea { resize: vertical; min-height: 120px; }
+    .field input[type="password"] { letter-spacing: 0.15em; }
+
+    /* ── Admin layout ──────────────────────────────────────────────── */
+    #admin-screen { display: none; }
+    .admin-wrap {
+      max-width: 1100px; margin: 0 auto;
+      padding: calc(var(--nav-h) + 32px) clamp(16px,4vw,40px) 80px;
+    }
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 40px; flex-wrap: wrap; gap: 12px;
+    }
+    .admin-title {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.8rem; letter-spacing: -0.03em;
+    }
+
+    /* ── Article list ──────────────────────────────────────────────── */
+    #admin-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 48px; }
+    .admin-row {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      padding: 16px 20px; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; transition: border-color 0.2s;
+    }
+    .admin-row:hover { border-color: var(--accent); }
+    .admin-row-title {
+      flex: 1; font-weight: 600; font-size: 0.92rem; min-width: 200px;
+    }
+    .admin-row-date { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+    .status-badge {
+      font-size: 0.65rem; padding: 3px 9px; border-radius: 100px; letter-spacing: 0.08em;
+      text-transform: uppercase; font-weight: 600; white-space: nowrap;
+    }
+    .status-published { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: #34d399; }
+    .status-draft     { background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); color: #fbbf24; }
+    .admin-row-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      width: 30px; height: 30px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--bg3);
+      color: var(--muted); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: border-color 0.2s, color 0.2s, background 0.2s;
+      font-size: 0.8rem;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .icon-btn.danger:hover { border-color: #f87171; color: #f87171; background: rgba(239,68,68,0.1); }
+
+    /* ── Editor ────────────────────────────────────────────────────── */
+    #editor-section {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: clamp(20px,4vw,40px);
+    }
+    .editor-title {
+      font-family: var(--font-display); font-weight: 800;
+      font-size: 1.3rem; letter-spacing: -0.02em; margin-bottom: 28px;
+    }
+    .editor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 640px) { .editor-grid { grid-template-columns: 1fr; } }
+
+    .editor-body-wrap { position: relative; }
+    .editor-tabs {
+      display: flex; gap: 2px; margin-bottom: 8px;
+      background: var(--bg3); border-radius: 8px; padding: 3px;
+      width: fit-content;
+    }
+    .editor-tab {
+      padding: 5px 14px; border-radius: 6px; font-size: 0.78rem;
+      cursor: pointer; color: var(--muted); transition: all 0.2s;
+      border: none; background: none; font-family: var(--font-body);
+    }
+    .editor-tab.active { background: var(--bg2); color: var(--text); }
+
+    #content-preview {
+      display: none;
+      min-height: 320px; padding: 14px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.9rem; line-height: 1.7; overflow-y: auto;
+    }
+    #content-preview.visible { display: block; }
+    #content-preview h2 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 24px 0 10px; }
+    #content-preview p { margin-bottom: 14px; }
+    #content-preview ul { padding-left: 20px; margin-bottom: 14px; }
+    #content-preview a { color: var(--accent); }
+    #content-preview strong { font-weight: 600; }
+    #content-preview code { background: var(--bg2); padding: 2px 5px; border-radius: 4px; font-size: 0.85em; }
+    #content-preview pre { background: var(--bg2); padding: 16px; border-radius: 8px; overflow-x: auto; margin-bottom: 14px; }
+
+    .hint { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+
+    .editor-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 24px; }
+    .btn-danger { background: rgba(239,68,68,0.1); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: rgba(239,68,68,0.2); }
+    .btn-success { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .btn-success:hover { background: rgba(16,185,129,0.25); }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 20px; font-size: 0.85rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4); z-index: 300;
+      transition: transform 0.3s var(--ease-out);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: rgba(16,185,129,0.4); color: #34d399; }
+
+    .section-divider { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+    .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  </style>
+</head>
+<body>
+
+<div id="dot-grid"></div>
+
+<!-- ── Navbar ──────────────────────────────────────────────────────── -->
+<nav id="navbar" style="transform:translateY(0)">
+  <a href="index.html" class="nav-logo">SJ</a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Portfolio</a>
+    <a class="nav-link" href="writing.html">Writing</a>
+    <a class="nav-link active">Admin</a>
+    <div id="nav-indicator" style="left:0;width:0"></div>
+    <button id="theme-toggle" class="nav-toggle" aria-label="Toggle theme"></button>
+  </div>
+</nav>
+
+<div id="dot-grid-2"></div>
+
+<!-- ── Login ──────────────────────────────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">SJ Admin</div>
+    <div class="login-sub">Enter your password to manage articles.</div>
+    <div class="login-err" id="login-err">Incorrect password. Try again.</div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pw" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="btn btn-primary" id="login-btn" style="width:100%;justify-content:center;">Unlock →</button>
+  </div>
+</div>
+
+<!-- ── Admin UI ────────────────────────────────────────────────────── -->
+<div id="admin-screen">
+  <div class="admin-wrap">
+    <div class="admin-header">
+      <div class="admin-title">Articles</div>
+      <div style="display:flex;gap:10px;">
+        <a class="btn btn-outline" href="writing.html" target="_blank">View Writing Page ↗</a>
+        <button class="btn btn-primary" id="new-btn">+ New Article</button>
+      </div>
+    </div>
+
+    <div class="section-divider">All Articles</div>
+    <div id="admin-list"></div>
+
+    <!-- Editor -->
+    <div id="editor-section">
+      <div class="editor-title" id="editor-heading">New Article</div>
+
+      <div class="editor-grid">
+        <div class="field">
+          <label>Title</label>
+          <input type="text" id="f-title" placeholder="Your article title..." />
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="f-date" />
+        </div>
+        <div class="field">
+          <label>Tags <span style="font-size:0.7rem;color:var(--muted);text-transform:none;letter-spacing:0">(comma separated)</span></label>
+          <input type="text" id="f-tags" placeholder="AWS, AI, Cloud" />
+        </div>
+        <div class="field">
+          <label>Slug</label>
+          <input type="text" id="f-slug" placeholder="auto-generated-from-title" />
+          <div class="hint">URL: article.html?slug=<span id="slug-preview">…</span></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Excerpt</label>
+        <textarea id="f-excerpt" rows="2" placeholder="One or two sentences summarising the article..."></textarea>
+      </div>
+
+      <div class="field" style="margin-bottom:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+          <label style="margin-bottom:0">Content</label>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:0.72rem;color:var(--muted);">Format:</span>
+            <div class="editor-tabs" id="format-tabs" style="margin-bottom:0">
+              <button class="editor-tab active" data-fmt="markdown">Markdown</button>
+              <button class="editor-tab" data-fmt="paragraphs">Paragraphs</button>
+              <button class="editor-tab" data-fmt="html">HTML</button>
+            </div>
+          </div>
+        </div>
+        <div class="editor-tabs" style="margin-bottom:8px;">
+          <button class="editor-tab active" data-tab="write">Write</button>
+          <button class="editor-tab" data-tab="preview">Preview</button>
+        </div>
+        <div class="editor-body-wrap">
+          <textarea id="f-content" rows="18" placeholder="## Section heading&#10;&#10;Start writing in Markdown..."></textarea>
+          <div id="content-preview"></div>
+        </div>
+        <div class="hint" id="format-hint">Markdown: ## Heading, **bold**, *italic*, `code`, ``` code block ```, - list item, > blockquote, [link](url)</div>
+      </div>
+
+      <div class="editor-actions">
+        <button class="btn btn-success" id="publish-btn">Publish</button>
+        <button class="btn btn-outline" id="draft-btn">Save as Draft</button>
+        <button class="btn btn-outline" id="cancel-btn">Cancel</button>
+        <button class="btn btn-danger" id="delete-btn" style="display:none;margin-left:auto">Delete Article</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="articles.js"></script>
+<script src="main.js"></script>
+<script>
+(function() {
+  // ── All mutable state declared first ──────────────────────────────
+  let editingId = null;
+  let currentFormat = 'markdown';
+
+  const formatHints = {
+    markdown:   'Markdown: ## Heading, **bold**, *italic*, `code`, ```code block```, - list item, > blockquote, [text](url)',
+    paragraphs: 'Paragraphs: Just type naturally. Each blank line = new paragraph. No special syntax needed.',
+    html:       'HTML: <h2> headings, <p> paragraphs, <ul><li> lists, <code> inline, <pre><code> blocks, <strong> bold.'
+  };
+  const formatPlaceholders = {
+    markdown:   '## Section Heading\n\nStart writing in Markdown...\n\n- bullet point\n- another point\n\n> A blockquote\n\n**bold** and *italic* and `inline code`',
+    paragraphs: 'Just write your article here.\n\nEach blank line creates a new paragraph.\n\nNo special formatting needed — just write naturally.',
+    html:       '<p>Start writing...</p>\n\n<h2>Section heading</h2>\n<p>Your content here.</p>'
+  };
+
+  // ── Auth ───────────────────────────────────────────────────────────
+  const PASS_HASH = 'samyak2026';
+  const SESSION_KEY = 'sj_admin_auth';
+
+  async function unlock(password) {
+    const pw = password || sessionStorage.getItem(SESSION_KEY + '_pw') || PASS_HASH;
+    sessionStorage.setItem(SESSION_KEY, '1');
+    sessionStorage.setItem(SESSION_KEY + '_pw', pw);
+    ArticleStore.setAdminToken(pw);
+    await ArticleStore.init(pw);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-screen').style.display = 'block';
+    bindEditorEvents();
+    renderList();
+    resetEditor();
+  }
+
+  if (sessionStorage.getItem(SESSION_KEY) === '1') { unlock(); }
+
+  document.getElementById('login-btn').addEventListener('click', tryLogin);
+  document.getElementById('login-pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+  function tryLogin() {
+    const pw = document.getElementById('login-pw').value;
+    if (pw === PASS_HASH) { unlock(pw); }
+    else {
+      document.getElementById('login-err').style.display = 'block';
+      document.getElementById('login-pw').value = '';
+    }
+  }
+
+  // ── Navbar ─────────────────────────────────────────────────────────
+  document.getElementById('navbar').classList.add('scrolled');
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // ── Markdown parser ────────────────────────────────────────────────
+  function parseMarkdown(md) {
+    return md
+      .replace(/```([a-z]*)\n?([\s\S]*?)```/g, (_, lang, code) =>
+        '<pre><code>' + code.replace(/</g,'&lt;').replace(/>/g,'&gt;').trim() + '</code></pre>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+      .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .replace(/((?:^- .+\n?)+)/gm, block => '<ul>' + block.trim().split('\n').map(l => '<li>' + l.replace(/^- /,'') + '</li>').join('') + '</ul>')
+      .replace(/((?:^\d+\. .+\n?)+)/gm, block => '<ol>' + block.trim().split('\n').map(l => '<li>' + l.replace(/^\d+\. /,'') + '</li>').join('') + '</ol>')
+      .replace(/^---$/gm, '<hr>')
+      .split('\n\n')
+      .map(b => {
+        b = b.trim();
+        if (!b) return '';
+        if (/^<(h[1-6]|ul|ol|blockquote|pre|hr)/.test(b)) return b;
+        return '<p>' + b.replace(/\n/g,'<br>') + '</p>';
+      }).join('\n');
+  }
+
+  function parseParagraphs(text) {
+    return text.split(/\n{2,}/).map(p => p.trim()).filter(Boolean)
+      .map(p => '<p>' + p.replace(/\n/g,'<br>') + '</p>').join('\n');
+  }
+
+  function contentToHtml() {
+    const val = document.getElementById('f-content').value;
+    if (currentFormat === 'markdown') return parseMarkdown(val);
+    if (currentFormat === 'paragraphs') return parseParagraphs(val);
+    return val;
+  }
+
+  function renderPreview() {
+    document.getElementById('content-preview').innerHTML = contentToHtml();
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.editor-tab[data-tab]').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    const ta = document.getElementById('f-content');
+    const preview = document.getElementById('content-preview');
+    if (tab === 'preview') { renderPreview(); preview.classList.add('visible'); ta.style.display = 'none'; }
+    else { preview.classList.remove('visible'); ta.style.display = ''; }
+  }
+
+  // ── Article list ───────────────────────────────────────────────────
+  function renderList() {
+    const list = document.getElementById('admin-list');
+    const arts = ArticleStore.getAllAdmin();
+    if (!arts.length) {
+      list.innerHTML = '<p style="color:var(--muted);font-size:0.88rem;padding:16px 0">No articles yet. Create your first one below.</p>';
+      return;
+    }
+    list.innerHTML = '';
+    arts.forEach(art => {
+      const row = document.createElement('div');
+      row.className = 'admin-row';
+      row.innerHTML = `
+        <div class="admin-row-title">${art.title}</div>
+        <div class="admin-row-date">${ArticleStore.formatDate(art.date)}</div>
+        <span class="status-badge ${art.published ? 'status-published' : 'status-draft'}">${art.published ? 'Published' : 'Draft'}</span>
+        <div class="admin-row-actions">
+          <button class="icon-btn" title="Edit" data-id="${art.id}" data-action="edit">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+          </button>
+          <button class="icon-btn" title="View" data-id="${art.id}" data-action="view">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="icon-btn danger" title="Delete" data-id="${art.id}" data-action="delete">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>`;
+      list.appendChild(row);
+    });
+    list.addEventListener('click', handleListAction);
+  }
+
+  function handleListAction(e) {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const { action, id } = btn.dataset;
+    if (action === 'edit') {
+      const art = ArticleStore.getAllAdmin().find(a => a.id === id);
+      if (art) loadIntoEditor(art);
+    } else if (action === 'view') {
+      const art = ArticleStore.getAllAdmin().find(a => a.id === id);
+      if (art) window.open('article.html?slug=' + encodeURIComponent(art.slug), '_blank');
+    } else if (action === 'delete') {
+      if (confirm('Delete this article? This cannot be undone.')) {
+        ArticleStore.remove(id).then(() => {
+          renderList();
+          showToast('Article deleted.', false);
+        }).catch(() => showToast('Delete failed. Check your connection.', false));
+      }
+    }
+  }
+
+  // ── Editor ─────────────────────────────────────────────────────────
+  function resetEditor() {
+    editingId = null;
+    currentFormat = 'markdown';
+    document.getElementById('editor-heading').textContent = 'New Article';
+    document.getElementById('f-title').value = '';
+    document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('f-tags').value = '';
+    document.getElementById('f-slug').value = '';
+    document.getElementById('slug-preview').textContent = '\u2026';
+    document.getElementById('f-excerpt').value = '';
+    document.getElementById('f-content').value = '';
+    document.getElementById('f-content').placeholder = formatPlaceholders.markdown;
+    document.getElementById('format-hint').textContent = formatHints.markdown;
+    document.getElementById('content-preview').innerHTML = '';
+    document.getElementById('delete-btn').style.display = 'none';
+    document.querySelectorAll('#format-tabs .editor-tab').forEach(b => b.classList.toggle('active', b.dataset.fmt === 'markdown'));
+    switchTab('write');
+  }
+
+  function loadIntoEditor(art) {
+    editingId = art.id;
+    currentFormat = art.format || 'html';
+    document.getElementById('editor-heading').textContent = 'Edit Article';
+    document.getElementById('f-title').value = art.title;
+    document.getElementById('f-date').value = art.date;
+    document.getElementById('f-tags').value = art.tags.join(', ');
+    document.getElementById('f-slug').value = art.slug;
+    document.getElementById('slug-preview').textContent = art.slug;
+    document.getElementById('f-excerpt').value = art.excerpt;
+    document.getElementById('f-content').value = art.rawContent || art.content;
+    document.getElementById('f-content').placeholder = formatPlaceholders[currentFormat];
+    document.getElementById('format-hint').textContent = formatHints[currentFormat];
+    document.querySelectorAll('#format-tabs .editor-tab').forEach(b => b.classList.toggle('active', b.dataset.fmt === currentFormat));
+    document.getElementById('delete-btn').style.display = 'inline-flex';
+    switchTab('write');
+    document.getElementById('editor-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function save(published) {
+    const title = document.getElementById('f-title').value.trim();
+    if (!title) { alert('Title is required.'); return; }
+    const art = {
+      id: editingId || ArticleStore.newId(),
+      title,
+      slug: document.getElementById('f-slug').value.trim() || ArticleStore.slugify(title),
+      date: document.getElementById('f-date').value || new Date().toISOString().split('T')[0],
+      tags: document.getElementById('f-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+      excerpt: document.getElementById('f-excerpt').value.trim(),
+      content: contentToHtml(),
+      rawContent: document.getElementById('f-content').value,
+      format: currentFormat,
+      published
+    };
+    try {
+      const saved = await ArticleStore.upsert(art);
+      editingId = saved.id;
+      document.getElementById('editor-heading').textContent = 'Edit Article';
+      document.getElementById('delete-btn').style.display = 'inline-flex';
+      renderList();
+      showToast(published ? 'Published!' : 'Saved as draft.', true);
+    } catch {
+      showToast('Save failed. Check your connection.', false);
+    }
+  }
+
+  // ── Bind editor events (called once after login) ───────────────────
+  function bindEditorEvents() {
+    document.getElementById('f-title').addEventListener('input', e => {
+      if (!editingId) {
+        const slug = ArticleStore.slugify(e.target.value);
+        document.getElementById('f-slug').value = slug;
+        document.getElementById('slug-preview').textContent = slug || '\u2026';
+      }
+    });
+    document.getElementById('f-slug').addEventListener('input', e => {
+      document.getElementById('slug-preview').textContent = e.target.value || '\u2026';
+    });
+    document.getElementById('format-tabs').addEventListener('click', e => {
+      const btn = e.target.closest('[data-fmt]');
+      if (!btn) return;
+      currentFormat = btn.dataset.fmt;
+      document.querySelectorAll('#format-tabs .editor-tab').forEach(b => b.classList.toggle('active', b === btn));
+      document.getElementById('f-content').placeholder = formatPlaceholders[currentFormat];
+      document.getElementById('format-hint').textContent = formatHints[currentFormat];
+      if (document.getElementById('content-preview').classList.contains('visible')) renderPreview();
+    });
+    document.querySelectorAll('.editor-tab[data-tab]').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    document.getElementById('new-btn').addEventListener('click', () => {
+      resetEditor();
+      document.getElementById('editor-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.getElementById('publish-btn').addEventListener('click', () => save(true));
+    document.getElementById('draft-btn').addEventListener('click', () => save(false));
+    document.getElementById('cancel-btn').addEventListener('click', resetEditor);
+    document.getElementById('delete-btn').addEventListener('click', () => {
+      if (!editingId) return;
+      if (confirm('Delete this article?')) {
+        ArticleStore.remove(editingId).then(() => {
+          resetEditor();
+          renderList();
+          showToast('Deleted.', false);
+        }).catch(() => showToast('Delete failed. Check your connection.', false));
+      }
+    });
+  }
+
+  // ── Toast ──────────────────────────────────────────────────────────
+  function showToast(msg, success) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (success ? ' success' : '');
+    setTimeout(() => { t.className = 'toast'; }, 2800);
+  }
+})();
+</script>
+</body>
+</html>
