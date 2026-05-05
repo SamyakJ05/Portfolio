@@ -49,7 +49,7 @@ if (navbar) {
 
 function updateActiveLink() {
   if (!indicator || !navLinks.length) return;
-  const sections = ['hero','featured','about','experience','accomplishments','education','writing','freelance','contact'];
+  const sections = ['hero','featured','about','experience','accomplishments','education','projects','writing','freelance','contact'];
   let current = 'hero';
   sections.forEach(id => {
     const el = document.getElementById(id);
@@ -185,8 +185,8 @@ document.querySelectorAll('.timeline-entry').forEach((entry, i) => {
 document.querySelectorAll('.acc-card').forEach((card, i) => { card.dataset.delay = (i * 80) + 'ms'; revealObserver.observe(card); });
 document.querySelectorAll('.edu-card').forEach((card, i) => { card.dataset.delay = (i * 100) + 'ms'; revealObserver.observe(card); });
 document.querySelectorAll('.section-title, .section-label, .about-bio').forEach(el => { el.classList.add('reveal'); revealObserver.observe(el); });
+document.querySelectorAll('.project-card').forEach((card, i) => { card.dataset.delay = (i * 100) + 'ms'; revealObserver.observe(card); });
 document.querySelectorAll('.writing-card:not(.writing-soon)').forEach((card, i) => { card.dataset.delay = (i * 100) + 'ms'; revealObserver.observe(card); });
-document.querySelectorAll('.writing-card.writing-soon').forEach((card, i) => { card.dataset.delay = ((i + 1) * 100) + 'ms'; revealObserver.observe(card); });
 document.querySelectorAll('.freelance-card').forEach((card, i) => { card.dataset.delay = (i * 80) + 'ms'; revealObserver.observe(card); });
 document.querySelectorAll('.freelance-cta, .freelance-sub').forEach(el => { el.classList.add('reveal'); revealObserver.observe(el); });
 
@@ -251,11 +251,11 @@ if (contactForm) {
         body: JSON.stringify({ name, email, message }),
       });
       if (!res.ok) throw new Error();
-      status.textContent = "Message sent! I'll get back to you within 24 hours.";
+      status.textContent = "Thanks! I'll get back to you within 24 hours.";
       status.className = 'success';
       contactForm.reset();
     } catch {
-      status.textContent = 'Something went wrong. Email me directly at sj.samyakj@gmail.com';
+      status.textContent = 'Something went wrong. Please email me directly at sj.samyakj@gmail.com';
       status.className = 'error';
     } finally {
       btn.disabled = false;
