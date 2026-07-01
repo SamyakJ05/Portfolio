@@ -15,6 +15,7 @@ const SEED_ARTICLES = [
     tags: ["building-in-public", "ai", "cloud", "engineering"],
     excerpt:
       "Why I'm starting this blog, what I'll write about, and what to expect.",
+    cover: "/images/blog-cover.png",
     content: `<p>I have shipped award-winning AI products, production cloud systems, and seven websites of my own. Almost none of it is written down. This blog fixes that.</p>
 
 <p>For the last two years I have been heads-down building. Cloud-native data platforms and backend systems by day. AI products by night: RetainIQ, a customer-retention platform that won the Innovation category at Amazon AIdeaS 2026. Seven production sites shipped end to end. A research paper on wheat-disease detection published in Elsevier's Procedia Computer Science.</p>
@@ -43,7 +44,7 @@ const SEED_ARTICLES = [
 <h2>Why now</h2>
 <p>The best engineers I follow all have one thing in common. They build in the open. The compounding is real: a year of writing turns scattered work into a body of work. I would rather start today with one imperfect post than keep waiting for the perfect one.</p>
 
-<p>If you build things, or want to, follow along. I am posting the same journey on Instagram at @samyak.space and on X at @_samyakk.</p>
+<p>If you build things, or want to, follow along. I am posting the same journey on Instagram at <a href="https://instagram.com/samyak.space" target="_blank" rel="noopener">@samyak.space</a> and on X at <a href="https://x.com/_samyakk" target="_blank" rel="noopener">@_samyakk</a>.</p>
 
 <p>First real breakdown drops next week: how RetainIQ went from a weekend idea to an Amazon AIdeaS winner, and the architecture that made it work.</p>
 

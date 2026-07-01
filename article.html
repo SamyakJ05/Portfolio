@@ -155,6 +155,12 @@
     .art-body a:hover { opacity: 0.75; }
     .art-body strong { color: var(--text); font-weight: 600; }
     .art-body em { color: var(--muted); }
+    .art-body img { max-width: 100%; height: auto; border-radius: 12px; display: block; margin: 32px 0; }
+    .art-cover {
+      width: 100%; aspect-ratio: 40 / 21; object-fit: cover;
+      border-radius: 16px; border: 1px solid var(--border);
+      display: block; margin: 8px 0 44px;
+    }
     .art-body blockquote {
       border-left: 3px solid var(--accent); padding: 2px 0 2px 24px;
       margin: 36px 0; color: var(--muted); font-style: italic; font-size: 1.05em;
@@ -342,6 +348,8 @@
         </span>
       </div>
     </header>
+
+    ${art.cover ? `<img class="art-cover" src="${art.cover}" alt="${art.title}" />` : ''}
 
     ${tocHTML}
 
