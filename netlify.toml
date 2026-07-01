@@ -9,21 +9,45 @@
   to = "/.netlify/functions/:splat"
   status = 200
 
-# blog.samyak.space → blog index
+# Enforce a single canonical host (no www) on both domains.
+[[redirects]]
+  from = "https://www.samyak.space/*"
+  to = "https://samyak.space/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.blog.samyak.space/*"
+  to = "https://blog.samyak.space/:splat"
+  status = 301
+  force = true
+
+# Old article URLs (/article, /article.html, with or without ?slug=) are
+# handled by netlify/functions/legacy-article-redirect.mjs (config.path),
+# which issues a clean 301 to https://blog.samyak.space/articles/<slug>
+# without carrying the stray query string over.
+
+# Old static blog index → canonical blog home.
+[[redirects]]
+  from = "/writing.html"
+  to = "https://blog.samyak.space/"
+  status = 301
+  force = true
+
+# blog.samyak.space root → server-rendered blog index (SSR from Blobs)
 [[redirects]]
   from = "https://blog.samyak.space"
-  to = "/writing.html"
+  to = "/.netlify/functions/writing-page"
   status = 200
   force = true
 
-# blog.samyak.space/article?slug=... → article page
 [[redirects]]
-  from = "https://blog.samyak.space/article"
-  to = "/article.html"
+  from = "https://blog.samyak.space/"
+  to = "/.netlify/functions/writing-page"
   status = 200
   force = true
 
-# blog.samyak.space/* → root (serves styles, js, etc.)
+# blog.samyak.space/* → root (serves styles, js, images, etc.)
 [[redirects]]
   from = "https://blog.samyak.space/*"
   to = "/:splat"

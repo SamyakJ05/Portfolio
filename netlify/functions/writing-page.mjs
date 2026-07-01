@@ -1,18 +1,95 @@
-<!DOCTYPE html>
+import { getStore } from "@netlify/blobs";
+import { getPublished, escapeHtml, escapeAttr } from "./_lib/articles.mjs";
+
+const BLOG_ORIGIN = "https://blog.samyak.space";
+const DEFAULT_OG_IMAGE = `${BLOG_ORIGIN}/images/blog-cover.png`;
+
+function readTime(html) {
+  const words = html.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+function cardHTML(art, isFeatured) {
+  const dateStr = new Date(art.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  const rt = readTime(art.content);
+  const tags = art.tags.map((t) => `<span class="blog-card-tag" data-tag="${escapeAttr(t)}">${escapeHtml(t)}</span>`).join("");
+
+  const body = `
+    <div class="blog-card-body">
+      ${isFeatured ? '<div class="blog-card-badge">Latest</div>' : ""}
+      <div class="blog-card-meta">
+        <span>${dateStr}</span>
+        <span class="blog-card-meta-dot">·</span>
+        <span>${rt} min read</span>
+      </div>
+      <div class="blog-card-title">${escapeHtml(art.title)}</div>
+      <div class="blog-card-excerpt">${escapeHtml(art.excerpt)}</div>
+      <div class="blog-card-footer">
+        <div class="blog-card-tags">${tags}</div>
+        <span class="blog-card-read">Read <span class="arr">→</span></span>
+      </div>
+    </div>
+    ${isFeatured ? `<div class="blog-card-visual${art.cover ? " has-image" : ""}">${art.cover ? `<img src="${art.cover}" alt="${escapeAttr(art.title)}" />` : escapeHtml(art.title.split(":")[0])}</div>` : ""}`;
+
+  return `<a class="blog-card${isFeatured ? " in featured" : " in"}" href="/articles/${encodeURIComponent(art.slug)}" data-tags="${art.tags.map(escapeAttr).join(",")}">${body}</a>`;
+}
+
+export default async (req) => {
+  const store = getStore("articles");
+  const articles = await getPublished(store);
+
+  const allTags = [...new Set(articles.flatMap((a) => a.tags))];
+  const filterTags = allTags.map((t) => `<button class="filter-tag" data-tag="${escapeAttr(t)}">${escapeHtml(t)}</button>`).join("");
+
+  const cardsHTML = articles.length
+    ? articles.map((a, i) => cardHTML(a, i === 0)).join("")
+    : '<div class="blog-empty"><h3>Nothing here yet</h3><p>Check back soon - articles are on the way.</p></div>';
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    name: "Samyak Jain — Writing",
+    url: `${BLOG_ORIGIN}/`,
+    description: "Technical writing on cloud engineering, AI development, and building things that work in production.",
+    author: { "@type": "Person", name: "Samyak Jain", url: "https://samyak.space" },
+    blogPost: articles.map((a) => ({
+      "@type": "BlogPosting",
+      headline: a.title,
+      url: `${BLOG_ORIGIN}/articles/${a.slug}`,
+      datePublished: a.date,
+    })),
+  };
+
+  const html = `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Writing - Samyak Jain</title>
   <meta name="description" content="Technical writing on cloud engineering, AI development, and building things that work in production." />
+  <link rel="canonical" href="${BLOG_ORIGIN}/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Writing - Samyak Jain" />
+  <meta property="og:description" content="Technical writing on cloud engineering, AI development, and building things that work in production." />
+  <meta property="og:image" content="${DEFAULT_OG_IMAGE}" />
+  <meta property="og:url" content="${BLOG_ORIGIN}/" />
+  <meta property="og:site_name" content="Samyak Jain" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Writing - Samyak Jain" />
+  <meta name="twitter:description" content="Technical writing on cloud engineering, AI development, and building things that work in production." />
+  <meta name="twitter:image" content="${DEFAULT_OG_IMAGE}" />
+
+  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
   <style>
     body { cursor: auto; }
     #cursor-dot, #cursor-ring { display: none; }
-
     .blog-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       height: var(--nav-h); display: flex; align-items: center;
@@ -36,8 +113,6 @@
     }
     .blog-logo:hover { color: var(--accent); }
     .blog-logo span { color: var(--accent); }
-    .blog-nav-sep { color: var(--border); font-size: 0.9rem; }
-    .blog-nav-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em; }
     .blog-nav-right { display: flex; align-items: center; gap: 14px; }
     .blog-nav-portfolio {
       font-size: 0.8rem; color: var(--muted);
@@ -45,8 +120,6 @@
       display: flex; align-items: center; gap: 5px;
     }
     .blog-nav-portfolio:hover { color: var(--text); }
-
-    /* ── Hero ───────────────────────────────────────────────────── */
     .blog-hero {
       padding: calc(var(--nav-h) + 80px) clamp(20px,6vw,120px) 64px;
       max-width: 1200px; margin: 0 auto;
@@ -54,8 +127,6 @@
       gap: 32px; align-items: end;
     }
     @media (max-width: 640px) { .blog-hero { grid-template-columns: 1fr; } }
-
-    .blog-hero-text {}
     .blog-eyebrow {
       font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 16px; font-weight: 600;
@@ -79,15 +150,11 @@
       font-size: 3rem; letter-spacing: -0.04em; color: var(--text); line-height: 1;
     }
     .blog-stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
-
-    /* ── Divider ───────────────────────────────────────────────── */
     .blog-divider {
       max-width: 1200px; margin: 0 auto;
       padding: 0 clamp(20px,6vw,120px);
       border-top: 1px solid var(--border);
     }
-
-    /* ── Filter bar ────────────────────────────────────────────── */
     .blog-filter {
       max-width: 1200px; margin: 0 auto;
       padding: 32px clamp(20px,6vw,120px) 40px;
@@ -97,12 +164,10 @@
     .filter-tag {
       padding: 6px 16px; border-radius: 100px; font-size: 0.78rem;
       border: 1px solid var(--border); background: transparent; color: var(--muted);
-      cursor: pointer; transition: all 0.2s var(--ease-hover);
+      cursor: pointer; transition: all 0.2s;
     }
     .filter-tag:hover { border-color: var(--accent); color: var(--text); }
     .filter-tag.active { border-color: var(--accent); color: var(--text); background: var(--accent-dim); }
-
-    /* ── Article grid ──────────────────────────────────────────── */
     .blog-grid {
       max-width: 1200px; margin: 0 auto;
       padding: 0 clamp(20px,6vw,120px) 100px;
@@ -110,16 +175,13 @@
       gap: 24px;
     }
     @media (max-width: 780px) { .blog-grid { grid-template-columns: 1fr; } }
-
     .blog-card {
       background: var(--bg2); border: 1px solid var(--border);
       border-radius: 16px; padding: 32px;
       text-decoration: none; color: var(--text);
       display: flex; flex-direction: column; gap: 0;
-      transition: transform 0.25s var(--ease-hover), box-shadow 0.25s, border-color 0.25s;
-      opacity: 0; transform: translateY(20px);
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
     }
-    .blog-card.in { opacity: 1; transform: translateY(0); transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out), box-shadow 0.25s, border-color 0.25s; }
     .blog-card:hover {
       transform: translateY(-5px);
       box-shadow: 0 20px 48px rgba(0,0,0,0.35);
@@ -127,87 +189,50 @@
     }
     .blog-card.featured { grid-column: 1 / -1; flex-direction: row; gap: 40px; align-items: center; }
     @media (max-width: 780px) { .blog-card.featured { flex-direction: column; gap: 0; } }
-
     .blog-card-badge {
       display: inline-flex; align-items: center; gap: 6px;
       font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--accent); margin-bottom: 16px; font-weight: 600;
     }
-    .blog-card-badge::before {
-      content: ''; width: 6px; height: 6px; border-radius: 50%;
-      background: var(--accent); display: block;
-    }
-
-    .blog-card-meta {
-      display: flex; align-items: center; gap: 10px;
-      font-size: 0.72rem; color: var(--muted);
-      margin-bottom: 14px;
-    }
+    .blog-card-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: block; }
+    .blog-card-meta { display: flex; align-items: center; gap: 10px; font-size: 0.72rem; color: var(--muted); margin-bottom: 14px; }
     .blog-card-meta-dot { opacity: 0.4; }
-
     .blog-card-title {
       font-family: var(--font-display); font-weight: 800;
       font-size: clamp(1.15rem, 2vw, 1.45rem); letter-spacing: -0.025em;
-      line-height: 1.25; margin-bottom: 12px;
-      transition: color 0.2s;
+      line-height: 1.25; margin-bottom: 12px; transition: color 0.2s;
     }
     .blog-card:hover .blog-card-title { color: var(--accent); }
     .blog-card.featured .blog-card-title { font-size: clamp(1.4rem, 2.5vw, 1.9rem); }
-
-    .blog-card-excerpt {
-      font-size: 0.88rem; color: var(--muted); line-height: 1.7;
-      flex-grow: 1; margin-bottom: 20px;
-    }
+    .blog-card-excerpt { font-size: 0.88rem; color: var(--muted); line-height: 1.7; flex-grow: 1; margin-bottom: 20px; }
     .blog-card.featured .blog-card-excerpt { font-size: 0.95rem; }
-
     .blog-card-footer {
       display: flex; justify-content: space-between; align-items: center;
-      margin-top: auto; padding-top: 20px;
-      border-top: 1px solid var(--border);
+      margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border);
     }
     .blog-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
-    .blog-card-tag {
-      font-size: 0.68rem; padding: 3px 9px; border-radius: 100px;
-      background: var(--bg3); border: 1px solid var(--border); color: var(--muted);
-    }
-    .blog-card-read {
-      font-size: 0.78rem; color: var(--accent); font-weight: 500;
-      display: flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0;
-    }
-    .blog-card-read .arr { transition: transform 0.2s var(--ease-hover); }
+    .blog-card-tag { font-size: 0.68rem; padding: 3px 9px; border-radius: 100px; background: var(--bg3); border: 1px solid var(--border); color: var(--muted); }
+    .blog-card-read { font-size: 0.78rem; color: var(--accent); font-weight: 500; display: flex; align-items: center; gap: 4px; white-space: nowrap; flex-shrink: 0; }
+    .blog-card-read .arr { transition: transform 0.2s; }
     .blog-card:hover .arr { transform: translateX(4px); }
-
     .blog-card.featured .blog-card-body { flex: 1; }
     .blog-card.featured .blog-card-visual {
-      width: 220px; flex-shrink: 0;
-      aspect-ratio: 4/3;
-      background: var(--bg3); border: 1px solid var(--border);
-      border-radius: 12px;
+      width: 220px; flex-shrink: 0; aspect-ratio: 4/3;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-display); font-weight: 800;
-      font-size: 1.4rem; color: var(--accent); letter-spacing: -0.03em;
-      opacity: 0.6;
-      overflow: hidden;
+      font-family: var(--font-display); font-weight: 800; font-size: 1.4rem; color: var(--accent);
+      letter-spacing: -0.03em; opacity: 0.6; overflow: hidden;
     }
     .blog-card.featured .blog-card-visual.has-image { opacity: 1; padding: 0; }
-    .blog-card.featured .blog-card-visual img {
-      width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 12px;
-    }
+    .blog-card.featured .blog-card-visual img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 12px; }
     @media (max-width: 780px) { .blog-card.featured .blog-card-visual { display: none; } }
-
-    /* ── Empty state ───────────────────────────────────────────── */
-    .blog-empty {
-      grid-column: 1 / -1; text-align: center; padding: 80px 20px; color: var(--muted);
-    }
+    .blog-empty { grid-column: 1 / -1; text-align: center; padding: 80px 20px; color: var(--muted); }
     .blog-empty h3 { font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 8px; color: var(--text); }
-
-    /* ── Blog footer ───────────────────────────────────────────── */
     .blog-footer {
       border-top: 1px solid var(--border);
       padding: 28px clamp(20px,6vw,120px);
       display: flex; justify-content: space-between; align-items: center;
-      font-size: 0.78rem; color: var(--muted);
-      max-width: 100%;
+      font-size: 0.78rem; color: var(--muted); max-width: 100%;
     }
     .blog-footer a { color: var(--muted); transition: color 0.2s; }
     .blog-footer a:hover { color: var(--accent); }
@@ -219,10 +244,10 @@
 
 <nav class="blog-nav" id="blog-nav">
   <div class="blog-nav-left">
-    <a class="blog-logo" id="home-link" href="index.html">SJ <span>·</span> Notes</a>
+    <a class="blog-logo" href="/">SJ <span>·</span> Notes</a>
   </div>
   <div class="blog-nav-right">
-    <a class="blog-nav-portfolio" id="portfolio-link" href="index.html">
+    <a class="blog-nav-portfolio" href="https://samyak.space">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       Portfolio
     </a>
@@ -238,7 +263,7 @@
       <p class="blog-desc">Thoughts on cloud engineering, AI development, and building things that actually work in production.</p>
     </div>
     <div class="blog-stats">
-      <span class="blog-stat-num" id="article-count">-</span>
+      <span class="blog-stat-num">${articles.length}</span>
       <span class="blog-stat-label">Articles</span>
     </div>
   </div>
@@ -248,122 +273,60 @@
   <div class="blog-filter" id="filter-bar">
     <span class="filter-label">Filter</span>
     <button class="filter-tag active" data-tag="all">All</button>
+    ${filterTags}
   </div>
 
-  <div class="blog-grid" id="articles-list"></div>
+  <div class="blog-grid" id="articles-list">${cardsHTML}</div>
 </main>
 
 <footer class="blog-footer">
   <span>Samyak Jain &copy; 2026</span>
-  <a id="footer-portfolio-link" href="index.html">samyak.space →</a>
+  <a href="https://samyak.space">samyak.space →</a>
 </footer>
 
-<script src="articles.js"></script>
-<script src="main.js"></script>
 <script>
-(async function() {
-  const isBlog = location.hostname === 'blog.samyak.space';
-  if (isBlog) {
-    document.querySelector('.blog-logo').href = '/';
-    document.getElementById('portfolio-link').href = 'https://samyak.space';
-    document.getElementById('footer-portfolio-link').href = 'https://samyak.space';
-  }
-
-  setTimeout(() => document.getElementById('blog-nav').classList.add('visible'), 0);
-  window.addEventListener('scroll', () => {
+(function() {
+  setTimeout(function() { document.getElementById('blog-nav').classList.add('visible'); }, 0);
+  window.addEventListener('scroll', function() {
     document.getElementById('blog-nav').classList.toggle('scrolled', window.scrollY > 20);
   });
 
-  const moonIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>`;
-  const sunIcon  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
-  let isDark = true;
-  const themeBtn = document.getElementById('theme-toggle');
+  var moonIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>';
+  var sunIcon  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  var isDark = true;
+  var themeBtn = document.getElementById('theme-toggle');
   themeBtn.innerHTML = moonIcon;
-  themeBtn.addEventListener('click', () => {
+  themeBtn.addEventListener('click', function() {
     isDark = !isDark;
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
     themeBtn.innerHTML = isDark ? moonIcon : sunIcon;
   });
 
-  window.trackPage('writing');
-  await ArticleStore.init();
-  const articles = ArticleStore.getAll();
-
-  document.getElementById('article-count').textContent = articles.length;
-
-  const allTags = [...new Set(articles.flatMap(a => a.tags))];
-  const filterBar = document.getElementById('filter-bar');
-  allTags.forEach(tag => {
-    const btn = document.createElement('button');
-    btn.className = 'filter-tag';
-    btn.dataset.tag = tag;
-    btn.textContent = tag;
-    filterBar.appendChild(btn);
-  });
-
-  let activeTag = 'all';
-
-  function readTime(art) {
-    return Math.max(1, Math.round(art.content.replace(/<[^>]+>/g,'').split(/\s+/).length / 200));
-  }
-
-  function articleUrl(art) {
-    return isBlog
-      ? `/article.html?slug=${encodeURIComponent(art.slug)}`
-      : `article.html?slug=${encodeURIComponent(art.slug)}`;
-  }
-
-  function renderArticles() {
-    const list = document.getElementById('articles-list');
-    list.innerHTML = '';
-    const filtered = activeTag === 'all' ? articles : articles.filter(a => a.tags.includes(activeTag));
-    if (!filtered.length) {
-      list.innerHTML = '<div class="blog-empty"><h3>Nothing here yet</h3><p>Check back soon - articles are on the way.</p></div>';
-      return;
-    }
-
-    filtered.forEach((art, i) => {
-      const isFeatured = i === 0 && activeTag === 'all';
-      const d = new Date(art.date);
-      const dateStr = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-      const rt = readTime(art);
-
-      const a = document.createElement('a');
-      a.className = 'blog-card' + (isFeatured ? ' featured' : '');
-      a.href = articleUrl(art);
-
-      const body = `
-        <div class="blog-card-body">
-          ${isFeatured ? '<div class="blog-card-badge">Latest</div>' : ''}
-          <div class="blog-card-meta">
-            <span>${dateStr}</span>
-            <span class="blog-card-meta-dot">·</span>
-            <span>${rt} min read</span>
-          </div>
-          <div class="blog-card-title">${art.title}</div>
-          <div class="blog-card-excerpt">${art.excerpt}</div>
-          <div class="blog-card-footer">
-            <div class="blog-card-tags">${art.tags.map(t => `<span class="blog-card-tag">${t}</span>`).join('')}</div>
-            <span class="blog-card-read">Read <span class="arr">→</span></span>
-          </div>
-        </div>
-        ${isFeatured ? `<div class="blog-card-visual${art.cover ? ' has-image' : ''}">${art.cover ? `<img src="${art.cover}" alt="${art.title}" />` : art.title.split(':')[0]}</div>` : ''}`;
-      a.innerHTML = body;
-      list.appendChild(a);
-      setTimeout(() => a.classList.add('in'), 60 + i * 70);
-    });
-  }
-
-  filterBar.addEventListener('click', e => {
-    const btn = e.target.closest('.filter-tag');
+  var filterBar = document.getElementById('filter-bar');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.blog-card'));
+  filterBar.addEventListener('click', function(e) {
+    var btn = e.target.closest('.filter-tag');
     if (!btn) return;
-    activeTag = btn.dataset.tag;
-    filterBar.querySelectorAll('.filter-tag').forEach(b => b.classList.toggle('active', b === btn));
-    renderArticles();
+    var tag = btn.dataset.tag;
+    filterBar.querySelectorAll('.filter-tag').forEach(function(b) { b.classList.toggle('active', b === btn); });
+    cards.forEach(function(card) {
+      var tags = (card.dataset.tags || '').split(',');
+      card.style.display = (tag === 'all' || tags.indexOf(tag) !== -1) ? '' : 'none';
+    });
   });
-
-  renderArticles();
 })();
 </script>
+<script src="/main.js"></script>
 </body>
-</html>
+</html>`;
+
+  return new Response(html, {
+    status: 200,
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+};
+
+// No `config.path` here on purpose: this must only ever serve
+// blog.samyak.space's root, never samyak.space's root (the portfolio
+// homepage). Routing to this function is host-scoped via netlify.toml
+// redirects instead of a global path claim.

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Samyak Jain</title>
+  <meta name="robots" content="noindex, nofollow" />
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
@@ -296,7 +297,7 @@
         <div class="field">
           <label>Slug</label>
           <input type="text" id="f-slug" placeholder="auto-generated-from-title" />
-          <div class="hint">URL: article.html?slug=<span id="slug-preview">…</span></div>
+          <div class="hint">URL: blog.samyak.space/articles/<span id="slug-preview">…</span></div>
         </div>
       </div>
 
@@ -506,7 +507,7 @@
       if (art) loadIntoEditor(art);
     } else if (action === 'view') {
       const art = ArticleStore.getAllAdmin().find(a => a.id === id);
-      if (art) window.open('article.html?slug=' + encodeURIComponent(art.slug), '_blank');
+      if (art) window.open('https://blog.samyak.space/articles/' + encodeURIComponent(art.slug), '_blank');
     } else if (action === 'delete') {
       if (confirm('Delete this article? This cannot be undone.')) {
         ArticleStore.remove(id).then(() => {

@@ -1,18 +1,130 @@
-<!DOCTYPE html>
+import { getStore } from "@netlify/blobs";
+import { getBySlug, escapeHtml, escapeAttr } from "./_lib/articles.mjs";
+
+const BLOG_ORIGIN = "https://blog.samyak.space";
+const DEFAULT_OG_IMAGE = `${BLOG_ORIGIN}/images/blog-cover.png`;
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function readTime(html) {
+  const words = html.replace(/<[^>]+>/g, " ").trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+// Injects ids into <h2> tags and returns { toc, content }.
+function buildTocAndContent(html) {
+  let i = 0;
+  const toc = [];
+  const content = html.replace(/<h2(\s[^>]*)?>([\s\S]*?)<\/h2>/g, (m, attrs, inner) => {
+    const id = `h-${i++}`;
+    const text = inner.replace(/<[^>]+>/g, "");
+    toc.push({ id, text });
+    return `<h2${attrs || ""} id="${id}">${inner}</h2>`;
+  });
+  return { toc, content };
+}
+
+function notFoundPage(blogIndex) {
+  return `<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Article not found - Samyak Jain</title>
+<meta name="robots" content="noindex" />
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<div class="not-found" style="text-align:center;padding:140px 20px;">
+<h1>Article not found</h1>
+<p>This article doesn't exist or hasn't been published yet.</p>
+<a class="btn btn-primary" href="${blogIndex}">Browse Articles</a>
+</div>
+</body>
+</html>`;
+}
+
+export default async (req) => {
+  const url = new URL(req.url);
+  const host = url.hostname;
+  const slug = url.pathname.replace(/^\/articles\//, "").replace(/\/$/, "");
+
+  if (host !== "blog.samyak.space" && host !== "localhost" && host !== "127.0.0.1") {
+    return Response.redirect(`${BLOG_ORIGIN}/articles/${encodeURIComponent(slug)}`, 301);
+  }
+
+  const store = getStore("articles");
+  const art = await getBySlug(store, slug);
+
+  if (!art || !art.published) {
+    return new Response(notFoundPage("/"), {
+      status: 404,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
+  }
+
+  const pageUrl = `${BLOG_ORIGIN}/articles/${art.slug}`;
+  const cover = art.cover ? `${BLOG_ORIGIN}${art.cover}` : DEFAULT_OG_IMAGE;
+  const rt = readTime(art.content);
+  const { toc, content } = buildTocAndContent(art.content);
+
+  const tocHTML = toc.length >= 2 ? `
+    <div class="art-toc">
+      <div class="art-toc-label">Contents</div>
+      <ul class="art-toc-list">
+        ${toc.map((h) => `<li class="art-toc-item"><a href="#${h.id}">${escapeHtml(h.text)}</a></li>`).join("")}
+      </ul>
+    </div>` : "";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: art.title,
+    description: art.excerpt,
+    image: [cover],
+    datePublished: art.date,
+    dateModified: art.date,
+    author: { "@type": "Person", name: "Samyak Jain", url: "https://samyak.space" },
+    publisher: {
+      "@type": "Person",
+      name: "Samyak Jain",
+      logo: { "@type": "ImageObject", url: DEFAULT_OG_IMAGE },
+    },
+    mainEntityOfPage: { "@type": "WebPage", "@id": pageUrl },
+  };
+
+  const html = `<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Article - Samyak Jain</title>
+  <title>${escapeHtml(art.title)} - Samyak Jain</title>
+  <meta name="description" content="${escapeAttr(art.excerpt)}" />
+  <link rel="canonical" href="${pageUrl}" />
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="${escapeAttr(art.title)}" />
+  <meta property="og:description" content="${escapeAttr(art.excerpt)}" />
+  <meta property="og:image" content="${cover}" />
+  <meta property="og:url" content="${pageUrl}" />
+  <meta property="og:site_name" content="Samyak Jain" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="${escapeAttr(art.title)}" />
+  <meta name="twitter:description" content="${escapeAttr(art.excerpt)}" />
+  <meta name="twitter:image" content="${cover}" />
+
+  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/styles.css" />
   <style>
     body { cursor: auto; }
     #cursor-dot, #cursor-ring { display: none; }
-
-    /* ── Reading nav ───────────────────────────────────────────── */
     .read-nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       height: var(--nav-h); display: flex; align-items: center;
@@ -51,21 +163,15 @@
       transition: color 0.2s; white-space: nowrap;
     }
     .read-nav-back:hover { color: var(--accent); }
-
-    /* ── Progress bar ──────────────────────────────────────────── */
     #read-progress {
       position: fixed; top: 0; left: 0; height: 2px;
       background: var(--accent); z-index: 200;
       width: 0%; transition: width 0.08s linear;
     }
-
-    /* ── Article layout ────────────────────────────────────────── */
     .art-wrap {
       max-width: 720px; margin: 0 auto;
       padding: calc(var(--nav-h) + 64px) clamp(20px, 5vw, 40px) 120px;
     }
-
-    /* ── Article header ────────────────────────────────────────── */
     .art-header { margin-bottom: 48px; }
     .art-back {
       display: inline-flex; align-items: center; gap: 6px;
@@ -74,28 +180,23 @@
       text-decoration: none;
     }
     .art-back:hover { color: var(--accent); }
-
     .art-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
     .art-tag {
       font-size: 0.7rem; padding: 4px 12px; border-radius: 100px;
       background: var(--accent-dim); border: 1px solid rgba(79,152,163,0.25);
       color: var(--accent); letter-spacing: 0.05em; font-weight: 500;
     }
-
     .art-title {
       font-family: var(--font-display); font-weight: 800;
       font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -0.04em;
       line-height: 1.1; margin-bottom: 24px;
     }
-
     .art-meta {
       display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center;
       font-size: 0.8rem; color: var(--muted);
       padding-bottom: 32px; border-bottom: 1px solid var(--border);
     }
-    .art-meta-author {
-      display: flex; align-items: center; gap: 8px;
-    }
+    .art-meta-author { display: flex; align-items: center; gap: 8px; }
     .art-meta-avatar {
       width: 28px; height: 28px; border-radius: 50%;
       background: var(--accent-dim); border: 1px solid var(--accent);
@@ -105,11 +206,7 @@
     }
     .art-meta-name { color: var(--text); font-weight: 500; }
     .art-meta-dot { opacity: 0.3; }
-    .art-meta-rt {
-      display: flex; align-items: center; gap: 5px;
-    }
-
-    /* ── TOC ────────────────────────────────────────────────────── */
+    .art-meta-rt { display: flex; align-items: center; gap: 5px; }
     .art-toc {
       background: var(--bg2); border: 1px solid var(--border);
       border-left: 3px solid var(--accent);
@@ -130,12 +227,7 @@
       background: var(--border); flex-shrink: 0;
     }
     .art-toc-item a:hover { color: var(--accent); }
-
-    /* ── Prose ──────────────────────────────────────────────────── */
-    .art-body {
-      font-size: clamp(1rem, 1.5vw, 1.1rem);
-      line-height: 1.9; color: var(--text);
-    }
+    .art-body { font-size: clamp(1rem, 1.5vw, 1.1rem); line-height: 1.9; color: var(--text); }
     .art-body h2 {
       font-family: var(--font-display); font-weight: 800;
       font-size: clamp(1.3rem, 2.5vw, 1.75rem); letter-spacing: -0.03em;
@@ -187,8 +279,6 @@
     }
     .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
     .copy-btn.copied { color: #34d399; border-color: rgba(52,211,153,0.4); }
-
-    /* ── Share bar ──────────────────────────────────────────────── */
     .art-share {
       display: flex; align-items: center; gap: 10px;
       margin: 48px 0; padding: 20px 24px;
@@ -202,8 +292,6 @@
       cursor: pointer; transition: all 0.2s; text-decoration: none;
     }
     .share-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* ── Author card ────────────────────────────────────────────── */
     .art-author {
       display: flex; gap: 20px; align-items: flex-start;
       padding: 28px; background: var(--bg2); border: 1px solid var(--border);
@@ -219,16 +307,7 @@
     .art-author-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
     .art-author-role { font-size: 0.8rem; color: var(--accent); margin-bottom: 8px; }
     .art-author-bio-text { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
-
-    /* ── Footer CTA ─────────────────────────────────────────────── */
-    .art-footer-cta {
-      margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px;
-    }
-
-    /* ── Not found ──────────────────────────────────────────────── */
-    .not-found { text-align: center; padding: 140px 20px; }
-    .not-found h2 { font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 12px; }
-    .not-found p { color: var(--muted); margin-bottom: 32px; }
+    .art-footer-cta { margin-top: 32px; display: flex; flex-wrap: wrap; gap: 10px; }
   </style>
 </head>
 <body>
@@ -237,12 +316,12 @@
 
 <nav class="read-nav" id="read-nav">
   <div class="read-nav-left">
-    <a class="read-nav-logo" id="nav-logo" href="writing.html">SJ</a>
+    <a class="read-nav-logo" id="nav-logo" href="/">SJ</a>
     <span class="read-nav-sep">·</span>
-    <span class="read-nav-title" id="nav-title"></span>
+    <span class="read-nav-title" id="nav-title">${escapeHtml(art.title)}</span>
   </div>
   <div class="read-nav-right">
-    <a class="read-nav-back" id="nav-back" href="writing.html">
+    <a class="read-nav-back" id="nav-back" href="/">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       All articles
     </a>
@@ -252,112 +331,37 @@
 
 <main>
   <div class="art-wrap" id="article-page">
-    <!-- Populated by JS -->
-  </div>
-</main>
-
-<script src="articles.js"></script>
-<script src="main.js"></script>
-<script>
-(async function() {
-  const isBlog = location.hostname === 'blog.samyak.space';
-  const blogIndex = isBlog ? '/' : 'https://blog.samyak.space';
-
-  document.getElementById('nav-logo').href = blogIndex;
-  document.getElementById('nav-back').href = blogIndex;
-
-  const moonIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>`;
-  const sunIcon  = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
-  let isDark = true;
-  const themeBtn = document.getElementById('theme-toggle');
-  themeBtn.innerHTML = moonIcon;
-  themeBtn.addEventListener('click', () => {
-    isDark = !isDark;
-    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-    themeBtn.innerHTML = isDark ? moonIcon : sunIcon;
-  });
-
-  const nav = document.getElementById('read-nav');
-  const navTitle = document.getElementById('nav-title');
-  setTimeout(() => nav.classList.add('visible'), 0);
-
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 20);
-    const el = document.documentElement;
-    const pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
-    document.getElementById('read-progress').style.width = pct + '%';
-    navTitle.classList.toggle('visible', window.scrollY > 200);
-  });
-
-  const params = new URLSearchParams(location.search);
-  const slug = params.get('slug');
-  const page = document.getElementById('article-page');
-
-  if (!slug) { renderNotFound(); return; }
-
-  await ArticleStore.init();
-  const art = ArticleStore.getBySlug(slug);
-  if (art?.published) window.trackPage(`article:${slug}`);
-  if (!art || !art.published) { renderNotFound(); return; }
-
-  document.title = art.title + ' - Samyak Jain';
-  navTitle.textContent = art.title;
-
-  const readTime = Math.max(1, Math.round(art.content.replace(/<[^>]+>/g,'').split(/\s+/).length / 200));
-
-  // Build TOC from h2s in content
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = art.content;
-  const headings = [...tempDiv.querySelectorAll('h2')];
-  const tocHTML = headings.length >= 2 ? `
-    <div class="art-toc">
-      <div class="art-toc-label">Contents</div>
-      <ul class="art-toc-list">
-        ${headings.map((h, i) => {
-          const id = 'h-' + i;
-          h.id = id;
-          return `<li class="art-toc-item"><a href="#${id}">${h.textContent}</a></li>`;
-        }).join('')}
-      </ul>
-    </div>` : '';
-
-  const contentHTML = tempDiv.innerHTML;
-
-  const shareUrl = encodeURIComponent(location.href);
-  const shareText = encodeURIComponent(art.title + ' by @_samyakk');
-
-  page.innerHTML = `
     <header class="art-header">
-      <a class="art-back" href="${blogIndex}">
+      <a class="art-back" href="/">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
         All Articles
       </a>
-      <div class="art-tags">${art.tags.map(t => `<span class="art-tag">${t}</span>`).join('')}</div>
-      <h1 class="art-title">${art.title}</h1>
+      <div class="art-tags">${art.tags.map((t) => `<span class="art-tag">${escapeHtml(t)}</span>`).join("")}</div>
+      <h1 class="art-title">${escapeHtml(art.title)}</h1>
       <div class="art-meta">
         <div class="art-meta-author">
           <div class="art-meta-avatar">SJ</div>
           <span class="art-meta-name">Samyak Jain</span>
         </div>
         <span class="art-meta-dot">·</span>
-        <span>${ArticleStore.formatDate(art.date)}</span>
+        <span>${formatDate(art.date)}</span>
         <span class="art-meta-dot">·</span>
         <span class="art-meta-rt">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${readTime} min read
+          ${rt} min read
         </span>
       </div>
     </header>
 
-    ${art.cover ? `<img class="art-cover" src="${art.cover}" alt="${art.title}" />` : ''}
+    ${art.cover ? `<img class="art-cover" src="${art.cover}" alt="${escapeAttr(art.title)}" />` : ""}
 
     ${tocHTML}
 
-    <div class="art-body">${contentHTML}</div>
+    <div class="art-body">${content}</div>
 
     <div class="art-share">
       <span class="art-share-label">Share</span>
-      <a class="share-btn" href="https://x.com/intent/tweet?url=${shareUrl}&text=${shareText}" target="_blank" rel="noopener">
+      <a class="share-btn" id="share-x" href="#" target="_blank" rel="noopener">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.736-8.857L1.254 2.25H8.08l4.261 5.636 5.903-5.636zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         Post on X
       </a>
@@ -374,50 +378,78 @@
         <div class="art-author-role">Software Engineer at UBS · Amazon AIdeaS 2026 Innovation Winner</div>
         <div class="art-author-bio-text">Building cloud-native systems and AI products. XLRI PGDM Finance. Writing about what I learn.</div>
         <div class="art-footer-cta">
-          <a class="btn btn-outline" href="${blogIndex}">← More Articles</a>
-          <a class="btn btn-primary" href="${isBlog ? 'https://samyak.space/#contact' : 'index.html#contact'}">Work with me</a>
+          <a class="btn btn-outline" href="/">← More Articles</a>
+          <a class="btn btn-primary" href="https://samyak.space/#contact">Work with me</a>
         </div>
       </div>
-    </div>`;
+    </div>
+  </div>
+</main>
 
-  // Copy link
-  document.getElementById('copy-link-btn').addEventListener('click', () => {
-    navigator.clipboard.writeText(location.href).then(() => {
-      const btn = document.getElementById('copy-link-btn');
+<script>
+(function() {
+  var moonIcon = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"/></svg>';
+  var sunIcon  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  var isDark = true;
+  var themeBtn = document.getElementById('theme-toggle');
+  themeBtn.innerHTML = moonIcon;
+  themeBtn.addEventListener('click', function() {
+    isDark = !isDark;
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    themeBtn.innerHTML = isDark ? moonIcon : sunIcon;
+  });
+
+  var nav = document.getElementById('read-nav');
+  var navTitle = document.getElementById('nav-title');
+  setTimeout(function() { nav.classList.add('visible'); }, 0);
+
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+    var el = document.documentElement;
+    var pct = (el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100;
+    document.getElementById('read-progress').style.width = pct + '%';
+    navTitle.classList.toggle('visible', window.scrollY > 200);
+  });
+
+  document.getElementById('share-x').href = 'https://x.com/intent/tweet?url=' + encodeURIComponent(location.href) + '&text=' + encodeURIComponent(document.title);
+
+  document.getElementById('copy-link-btn').addEventListener('click', function() {
+    navigator.clipboard.writeText(location.href).then(function() {
+      var btn = document.getElementById('copy-link-btn');
       btn.classList.add('copied');
-      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
-      setTimeout(() => {
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      setTimeout(function() {
         btn.classList.remove('copied');
-        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Copy link`;
+        btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> Copy link';
       }, 2000);
     });
   });
 
-  // Copy buttons on code blocks
-  document.querySelectorAll('.art-body pre').forEach(pre => {
-    const btn = document.createElement('button');
+  document.querySelectorAll('.art-body pre').forEach(function(pre) {
+    var btn = document.createElement('button');
     btn.className = 'copy-btn';
     btn.textContent = 'copy';
     pre.appendChild(btn);
-    btn.addEventListener('click', () => {
-      const code = pre.querySelector('code')?.textContent || '';
-      navigator.clipboard.writeText(code).then(() => {
+    btn.addEventListener('click', function() {
+      var code = pre.querySelector('code');
+      var text = code ? code.textContent : '';
+      navigator.clipboard.writeText(text).then(function() {
         btn.textContent = 'copied!';
         btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+        setTimeout(function() { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
       });
     });
   });
-
-  function renderNotFound() {
-    page.innerHTML = `
-      <div class="not-found">
-        <h2>Article not found</h2>
-        <p>This article doesn't exist or hasn't been published yet.</p>
-        <a class="btn btn-primary" href="${blogIndex}">Browse Articles</a>
-      </div>`;
-  }
 })();
 </script>
+<script src="/main.js"></script>
 </body>
-</html>
+</html>`;
+
+  return new Response(html, {
+    status: 200,
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
+};
+
+export const config = { path: "/articles/:slug" };
