@@ -305,6 +305,12 @@
         <textarea id="f-excerpt" rows="2" placeholder="One or two sentences summarising the article..."></textarea>
       </div>
 
+      <div class="field">
+        <label>Cover Image URL <span style="font-size:0.7rem;color:var(--muted);text-transform:none;letter-spacing:0">(optional)</span></label>
+        <input type="text" id="f-cover" placeholder="/images/blog-cover.png" />
+        <div class="hint">Shown at the top of the article. Use a repo path like /images/blog-cover.png or a full URL.</div>
+      </div>
+
       <div class="field" style="margin-bottom:0">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
           <label style="margin-bottom:0">Content</label>
@@ -522,6 +528,7 @@
     document.getElementById('f-slug').value = '';
     document.getElementById('slug-preview').textContent = '\u2026';
     document.getElementById('f-excerpt').value = '';
+    document.getElementById('f-cover').value = '';
     document.getElementById('f-content').value = '';
     document.getElementById('f-content').placeholder = formatPlaceholders.markdown;
     document.getElementById('format-hint').textContent = formatHints.markdown;
@@ -541,6 +548,7 @@
     document.getElementById('f-slug').value = art.slug;
     document.getElementById('slug-preview').textContent = art.slug;
     document.getElementById('f-excerpt').value = art.excerpt;
+    document.getElementById('f-cover').value = art.cover || '';
     document.getElementById('f-content').value = art.rawContent || art.content;
     document.getElementById('f-content').placeholder = formatPlaceholders[currentFormat];
     document.getElementById('format-hint').textContent = formatHints[currentFormat];
@@ -560,6 +568,7 @@
       date: document.getElementById('f-date').value || new Date().toISOString().split('T')[0],
       tags: document.getElementById('f-tags').value.split(',').map(t => t.trim()).filter(Boolean),
       excerpt: document.getElementById('f-excerpt').value.trim(),
+      cover: document.getElementById('f-cover').value.trim(),
       content: contentToHtml(),
       rawContent: document.getElementById('f-content').value,
       format: currentFormat,
