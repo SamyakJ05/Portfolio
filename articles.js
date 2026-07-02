@@ -18,7 +18,7 @@ const SEED_ARTICLES = [
     cover: "/images/blog-cover.png",
     content: `<p>I have shipped award-winning AI products, production cloud systems, and seven websites of my own. Almost none of it is written down. This blog fixes that.</p>
 
-<p>For the last two years I have been heads-down building. Cloud-native data platforms and backend systems by day. AI products by night: RetainIQ, a customer-retention platform that won the Innovation category at Amazon AIdeaS 2026. Seven production sites shipped end to end. A research paper on wheat-disease detection published in Elsevier's Procedia Computer Science.</p>
+<p>For the last two years I have been heads-down building. Cloud-native data platforms and backend systems by day. AI products by night: RetainIQ, a knowledge-risk platform that won the Innovation category at Amazon AIdeaS 2026. Seven production sites shipped end to end. A research paper on wheat-disease detection published in Elsevier's Procedia Computer Science.</p>
 
 <p>The work is real. The problem is that it lives in private repos, internal wikis, and my own head. When someone asks what I actually do, I do not have a good link to send.</p>
 
