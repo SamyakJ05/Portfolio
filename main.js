@@ -83,6 +83,8 @@ if (heroName) {
       });
     }
     splitChars(heroName);
+    const badge = document.querySelector('.hero-badge');
+    if (badge) { badge.style.transition = 'opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out)'; badge.style.opacity = '1'; badge.style.transform = 'translateY(0)'; }
     const chars = heroName.querySelectorAll('.char');
     chars.forEach((ch, i) => {
       setTimeout(() => {
