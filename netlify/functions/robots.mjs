@@ -1,12 +1,30 @@
+const SITE_INFO = {
+  "blog.samyak.space": {
+    host: "blog.samyak.space",
+    description: "Samyak Jain's technical blog: cloud engineering, AI development, and build logs from production systems.",
+  },
+  "samyak.space": {
+    host: "samyak.space",
+    description: "Samyak Jain's portfolio: Software Engineer at UBS, Amazon AIdeaS 2026 Innovation Category Winner.",
+  },
+};
+
 export default async (req) => {
   const host = new URL(req.url).hostname;
-  const canonicalHost = host === "blog.samyak.space" ? "blog.samyak.space" : "samyak.space";
+  const site = SITE_INFO[host] ?? SITE_INFO["samyak.space"];
 
-  const body = `User-agent: *
+  const body = `# robots.txt for ${site.host}
+# ${site.description}
+#
+# All well-behaved crawlers are welcome. /admin.html is a private,
+# authenticated publishing tool and isn't public content, so it's
+# excluded from crawling and indexing.
+
+User-agent: *
 Allow: /
 Disallow: /admin.html
 
-Sitemap: https://${canonicalHost}/sitemap.xml
+Sitemap: https://${site.host}/sitemap.xml
 `;
 
   return new Response(body, {
