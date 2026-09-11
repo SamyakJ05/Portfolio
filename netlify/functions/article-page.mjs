@@ -66,7 +66,7 @@ export default async (req) => {
   }
 
   const pageUrl = `${BLOG_ORIGIN}/articles/${art.slug}`;
-  const cover = art.cover ? `${BLOG_ORIGIN}${art.cover}` : DEFAULT_OG_IMAGE;
+  const cover = art.cover ? new URL(art.cover, BLOG_ORIGIN).href : DEFAULT_OG_IMAGE;
   const rt = readTime(art.content);
   const { toc, content } = buildTocAndContent(art.content);
 
@@ -80,13 +80,13 @@ export default async (req) => {
 
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     headline: art.title,
     description: art.excerpt,
     image: [cover],
     datePublished: art.date,
     dateModified: art.date,
-    author: { "@type": "Person", name: "Samyak Jain", url: "https://samyak.space" },
+    author: { "@type": "Person", "@id": "https://samyak.space/#person", name: "Samyak Jain", url: "https://samyak.space" },
     publisher: {
       "@type": "Person",
       name: "Samyak Jain",
@@ -107,16 +107,16 @@ export default async (req) => {
   <meta property="og:type" content="article" />
   <meta property="og:title" content="${escapeAttr(art.title)}" />
   <meta property="og:description" content="${escapeAttr(art.excerpt)}" />
-  <meta property="og:image" content="${cover}" />
+  <meta property="og:image" content="${escapeAttr(cover)}" />
   <meta property="og:url" content="${pageUrl}" />
   <meta property="og:site_name" content="Samyak Jain" />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escapeAttr(art.title)}" />
   <meta name="twitter:description" content="${escapeAttr(art.excerpt)}" />
-  <meta name="twitter:image" content="${cover}" />
+  <meta name="twitter:image" content="${escapeAttr(cover)}" />
 
-  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+  <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, "\\u003c")}</script>
 
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />

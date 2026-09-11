@@ -51,7 +51,7 @@ export default async (req) => {
     name: "Samyak Jain — Writing",
     url: `${BLOG_ORIGIN}/`,
     description: "Technical writing on cloud engineering, AI development, and building things that work in production.",
-    author: { "@type": "Person", name: "Samyak Jain", url: "https://samyak.space" },
+    author: { "@type": "Person", "@id": "https://samyak.space/#person", name: "Samyak Jain", url: "https://samyak.space" },
     blogPost: articles.map((a) => ({
       "@type": "BlogPosting",
       headline: a.title,
@@ -81,7 +81,7 @@ export default async (req) => {
   <meta name="twitter:description" content="Technical writing on cloud engineering, AI development, and building things that work in production." />
   <meta name="twitter:image" content="${DEFAULT_OG_IMAGE}" />
 
-  <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+  <script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, "\\u003c")}</script>
 
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet" />
