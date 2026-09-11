@@ -10,7 +10,6 @@ function urlEntry(loc, { lastmod, changefreq, priority } = {}) {
 export default async (req) => {
   const host = new URL(req.url).hostname;
   const isBlog = host === "blog.samyak.space";
-  const today = new Date().toISOString().slice(0, 10);
 
   let entries, comment;
   if (isBlog) {
@@ -30,7 +29,7 @@ export default async (req) => {
     ];
   } else {
     comment = `<!-- Sitemap for samyak.space. The portfolio is a single-page site; this lists its one canonical URL. -->`;
-    entries = [urlEntry("https://samyak.space/", { lastmod: today, changefreq: "monthly", priority: "1.0" })];
+    entries = [urlEntry("https://samyak.space/", { changefreq: "monthly", priority: "1.0" })];
   }
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
